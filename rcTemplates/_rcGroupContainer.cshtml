@@ -1,0 +1,64 @@
+﻿@{ 
+    var db = Database.Open( "GP" );
+    var sqlSelect = "Select * from rc_groups where owner=@0";
+    var data = db.Query(sqlSelect, (string) Session["userName"]);    
+ }
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <title></title>
+    </head>
+    <body>
+     
+
+       @if ( data != null ) 
+       {
+           var value = 0;
+           <div class="table" >
+           <table>
+
+               <colgroup>
+                 <col span="1" style="width: 45%;">
+                 <col span="1" style="width: 30%;">
+                 <col span="1" style="width: 25%;">
+              </colgroup>
+                   <tr>
+                       <th style="border-left: none">Group Name </th>
+                       <th>Group Owner</th>
+                       <th>Date Created</th>
+                   </tr>
+           @foreach ( var item in data ) 
+           {
+               if ((value % 2) != 0)
+               {
+                   <tr>
+                       <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #2D75A6">@item.groupName</td>
+                       <td> @item.owner</td>
+                       <td >blahh</td>
+                   </tr>
+               }
+               else
+               {
+                   <tr>
+                       <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">@item.groupName</td>
+                       <td> @item.owner</td>
+                       <td >hon</td>
+                   </tr>
+               }      
+               //value++;  
+           }
+            </table>
+          </div> 
+        }
+         else 
+        {
+         @Html.Raw("You are a loser")
+        }
+    </body>
+</html>

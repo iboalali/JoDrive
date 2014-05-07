@@ -1,0 +1,42 @@
+
+table
+{
+table-layout: fixed;
+border-collapse:collapse;
+border: none;
+width: 100%;
+
+}
+
+
+th {
+    border-left: 1px solid #E4E4E4;
+    height: 19px;
+    padding: 14px;
+    text-align: left;
+    width: 100%;
+    font-weight: 800;
+    color: #000;
+}
+
+tr:not(:first-child):hover
+{
+  background-color: #F7F7F7;
+}
+
+td
+{
+color: #5B5B5B;
+border: 1px solid #EDEDED;
+text-align:left;
+padding:12px;
+height:20px;
+vertical-align:bottom;
+font-size: 120%;
+font-weight: 600;
+border-left: none;
+border-right: none;
+}
+
+
+

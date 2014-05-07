@@ -1,0 +1,158 @@
+@{
+    //super simple login page
+    //just to provide basic protection for control panel
+    Validation.RequireField( "uName", "Required field" );
+    Validation.RequireField( "uPwd", "Required field" );
+    //ModelState.AddModelError( "LogInError", "Invalid username or password" );
+    //ModelState.AddError("LogInError", "Invalid username or password");
+    //Validation.AddFormError( "Invalid username or password" );
+    string message = string.Empty;
+
+    Validation.RequireField( "suName", "Required field" );
+    Validation.RequireField( "suPwd", "Required field" );
+    Validation.RequireField( "semail", "Required field" );
+
+
+    Validation.Add( "semail", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
+
+    string userNameMessage = string.Empty;
+    string passwordMessage = string.Empty;
+
+    if ( IsPost ) {
+
+        switch ( Request.Form["btn"] ) {
+            case "Login":
+                var un = Request["uName"];
+                var up = Request["uPwd"];
+
+
+                var db = Database.Open( "GP" );
+                var sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
+                var data = db.QuerySingle( sqlSelect, un, up );
+
+                if ( data != null ) {
+                    Session["userName"] = un;
+                    Response.Redirect( "~/home" );
+
+                } else {
+                    message = "Invalid username or password";
+
+
+
+                }
+
+
+                break;
+
+            case "SignUp":
+
+                var run = Request["suName"];
+                var rup = Request["suPwd"];
+                var upr = Request["suPwdr"];
+                var rem = Request["semail"];
+
+                db = Database.Open( "GP" );
+                sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
+                data = db.QuerySingle( sqlSelect, run, rup );
+
+                if ( data != null ) {
+                    userNameMessage = "User Name already exists";
+                } else {
+                    if ( rup != upr ) {
+                        passwordMessage = "Password doesn't match";
+                    } else {
+                        int r = db.Execute( "INSERT INTO rc_Login VALUES (@0, @1, @2)", run, rup, rem );
+                        if ( r == 0 ) {
+                            // Error
+                        } else {
+                            Response.Redirect( "~/groups" );
+                            
+                        }
+
+
+                    }
+
+                }
+
+
+                break;
+            default:
+                break;
+        }
+
+
+
+    }
+
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.js"></script>
+    <link type="text/css" rel="Stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/black-tie/jquery-ui.css" />
+    <link href="~/rcLayouts/default/css/loginStyle.css" rel="stylesheet" />
+
+</head>
+<body>
+    <form method="post" action="">
+        <fieldset>
+            <!--<legend>Login</legend>-->
+            <ol>
+                <li>
+                    <label for="uName">User:</label>
+                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" maxlength="50" /> @Html.ValidationMessage( "uName" )
+                </li>
+                <li>
+                    <label for="uPwd">Password:</label>
+                    <input type="password" name="uPwd" @Validation.For( "uPwd" ) id="uPwd" value="" /> @Html.ValidationMessage( "uPwd" )
+                </li>
+                <li>
+                    @* @Html.ValidationMessage( "LogInError" ); *@
+                    <p style="color: #f00; font-size: medium"> @Html.Raw( message )</p>
+                </li>
+            </ol>
+
+            <p class="form-actions">
+                <input type="submit" name="btn" value="Login" title="Login" />
+            </p>
+
+        </fieldset>
+    </form>
+
+    <form method="post" action="">
+
+        <fieldset>
+            <ol>
+                <li>
+                    <label for="suName">User:</label>
+                    <input type="text" name="suName" @Validation.For( "suName" ) id="suName" value="" maxlength="50" /> @Html.ValidationMessage( "suName" ) @Html.Raw( userNameMessage )
+                </li>
+                <li>
+                    <label for="suPwd">Password:</label>
+                    <input type="password" name="suPwd" @Validation.For( "suPwd" ) id="suPwd" value="" /> @Html.ValidationMessage( "suPwd" )
+                </li>
+                <li>
+                    <label for="suPwdr">Password:</label>
+                    <input type="password" name="suPwdr" @Validation.For( "suPwdr" ) id="suPwdr" value="" /> @Html.ValidationMessage( "suPwdr" ) @Html.Raw( passwordMessage )
+                </li>
+                <li>
+                    <label for="email">Email:</label>
+                    <span>@Html.TextBox( "semail", Request["semail"] )</span> @Html.ValidationMessage( "semail" )
+
+                </li>
+            </ol>
+            <p class="form-actions">
+                <input type="submit" name="btn" value="SignUp" title="SignUp" />
+            </p>
+
+        </fieldset>
+    </form>
+
+
+</body>
+</html>
