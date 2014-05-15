@@ -1,0 +1,53 @@
+﻿@{
+    var customerEmail = Request["customerEmail"]; 
+    var errorMessage = "";
+    var debuggingFlag = false;
+
+    if(IsPost){
+
+    try {
+        // Initialize WebMail helper
+        WebMail.SmtpServer = /*"smtp-mail.outlook.com";*/ "smtp.live.com";
+        WebMail.SmtpPort = 587; //25;
+        WebMail.EnableSsl = true;
+        WebMail.UserName = "ibo-alalali@hotmail.de";
+        WebMail.Password = "heiderhofring16a";
+        WebMail.From = "ibo-alalai@hotmail.de";
+
+        // Send email
+        WebMail.Send(to:customerEmail,
+        subject: "test email from our site",
+        body: "if this has been send, then you are awesome");
+        
+    }
+    catch (Exception ex ) {
+        errorMessage = ex.Message;
+    }
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+  <h2>Send an Email</h2>
+  <form method="post" action="">
+    <div>
+        Your email address:
+        <input type="text" name="customerEmail" />
+    </div>
+
+    <div>
+        <input type="submit" value="Submit" />
+    </div>
+        @if ( errorMessage != "" ) {
+            <div>
+                <p>@errorMessage</p>
+            </div>
+          
+        }
+  </form>
+</body>
+</html>
