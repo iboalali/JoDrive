@@ -25,7 +25,7 @@
     @RenderSection( "head" )
     @Html.Raw( App.siteAnalytics )
 </head>
-<body>
+<body style="background-image:url(bg.jpg); background-repeat:no-repeat; background-size:cover">
     @*
         <div class="navbar-wrapper">
           <div class="container">
@@ -79,16 +79,12 @@
             <!--</div>-->
             <!-- START 2 columns layout - right sidebar-->
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6" >
                     <div class="col-md-3"></div>
-                    <div class="col-md-6">
-
-                        </br>
-                        <p></br></br></br></p>
-                        <p></br></br></br></p>
-                        <p></br></br></br></p>
+                    <div class="col-md-6" style="padding-top:22em">
+                        
                         @RenderSection( "rcLeft", false )
-                        <p></br></p>
+                        
 
                     </div>
                     <div class="col-md-3"></div>
@@ -97,80 +93,18 @@
 
                 </div>
                 <div class="col-md-6">
-                    <div class="col-md-9">
+                    <div class="col-md-6" style="padding-top:15em">
 
                         @RenderSection( "rcRight", false )
                     </div>
-                    <div class="col-md-3"></div>
+                    <div class="col-md-6"></div>
 
                    
 
                 </div>
 
             </div>
-            <!-- END 2 columns layout - right sidebar-->
-            @* 
-                  @if(IsSectionDefined("rcLeft") && IsSectionDefined("rcRight")){
-                  <!-- START 3 columns layout-->
-                <div class="row">
-                    <div class="col-md-3">
-                     @RenderSection("rcLeft",false)
-                  </div>
-                  <div class="col-md-6">
-                     @RenderSection("rcAboveBody",false)
-                     @RenderBody()
-                     @RenderSection("rcBelowBody",false)
-                  </div>
-                  <div class="col-md-3">
-                    @RenderSection("rcRight",false)
-                  </div>
-                </div>
-                  <!-- END 3 columns layout-->
-                  }
-
-                  @if(IsSectionDefined("rcLeft") && !IsSectionDefined("rcRight")){
-                  <!-- START 2 columns layout - left sidebar -->
-                <div class="row">
-                    <div class="col-md-3">
-                     @RenderSection("rcLeft",false)
-                  </div>
-                  <div class="col-md-9">
-                     @RenderSection("rcAboveBody",false)
-                     @RenderBody()
-                     @RenderSection("rcBelowBody",false)
-                  </div>
-                </div>
-                  <!-- END 2 columns layout - left sidebar-->
-                  }
-
-                  @if(!IsSectionDefined("rcLeft") && IsSectionDefined("rcRight")){
-                  <!-- START 2 columns layout - right sidebar-->
-                <div class="row">
-                  <div class="col-md-9">
-                     @RenderSection("rcAboveBody",false)
-                     @RenderBody()
-                     @RenderSection("rcBelowBody",false)
-                  </div>
-                  <div class="col-md-3">
-                    @RenderSection("rcRight",false)
-                  </div>
-                </div>
-                  <!-- END 2 columns layout - right sidebar-->
-                  }
-
-                  @if(!IsSectionDefined("rcLeft") && !IsSectionDefined("rcRight")){
-                  <!-- START body only layout-->
-                <div class="row">
-                  <div class="col-md-12">
-                     @RenderSection("rcAboveBody",false)
-                     @RenderBody()
-                     @RenderSection("rcBelowBody",false)
-                  </div>
-                </div>
-                  <!-- END body only layout-->
-                  }
-
-            *@
+            
 
             @RenderSection( "rcBottom", false )
 

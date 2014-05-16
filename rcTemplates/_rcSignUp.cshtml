@@ -57,11 +57,12 @@
 <body >
     <form method="post" action="">
 
-        <fieldset>
+
+        <fieldset style="background-color:white; width:312px">
             <ol>
                 <li>
                     <label for="uName">User:</label>
-                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" maxlength="50" /> @Html.ValidationMessage( "uName" ) @Html.Raw( userNameMessage )
+                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" /> @Html.ValidationMessage( "uName" ) @Html.Raw( userNameMessage )
                 </li>
                 <li>
                     <label for="uPwd">Password:</label>
@@ -78,7 +79,7 @@
                 </li>
             </ol>
             <p class="form-actions">
-                <input type="submit" name="btn" value="SignUp" title="SignUp" />
+                <input type="submit" name="btn" value="SignUp" title="SignUp" /> <a href="~/" style="padding-left:1em">or Login</a>
             </p>
 
         </fieldset>

@@ -99,12 +99,12 @@
 </head>
 <body>
     <form method="post" action="">
-        <fieldset>
+        <fieldset style="background-color: white; width:312px">
             <!--<legend>Login</legend>-->
             <ol>
                 <li>
                     <label for="uName">User:</label>
-                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" maxlength="50" /> @Html.ValidationMessage( "uName" )
+                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value=""  /> @Html.ValidationMessage( "uName" )
                 </li>
                 <li>
                     <label for="uPwd">Password:</label>
@@ -118,7 +118,7 @@
 
             <p class="form-actions">
                 <input type="submit" name="btn" value="Login" title="Login" />
-                <a href="~/signup" style="padding-left:1em">or signUp</a>
+                <a href="~/signup" style="padding-left:1em">or SignUp</a>
             </p>
 
         </fieldset>
