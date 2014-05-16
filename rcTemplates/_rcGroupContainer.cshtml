@@ -1,4 +1,8 @@
 ﻿@{ 
+    if ( Session["userName"] == null ) {
+        Response.Redirect( "~/" );
+    }
+    
     var db = Database.Open( "GP" );
     var sqlSelect = "Select * from rc_groups where owner=@0";
     var data = db.Query(sqlSelect, (string) Session["userName"]);    

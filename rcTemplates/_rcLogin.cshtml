@@ -17,7 +17,8 @@
 
     string userNameMessage = string.Empty;
     string passwordMessage = string.Empty;
-
+    var db = Database.Open( "GP" );
+    var sqlSelect = string.Empty;
     if ( IsPost ) {
 
         switch ( Request.Form["btn"] ) {
@@ -26,8 +27,7 @@
                 var up = Request["uPwd"];
 
 
-                var db = Database.Open( "GP" );
-                var sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
+                sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
                 var data = db.QuerySingle( sqlSelect, un, up );
 
                 if ( data != null ) {
@@ -51,7 +51,6 @@
                 var upr = Request["suPwdr"];
                 var rem = Request["semail"];
 
-                db = Database.Open( "GP" );
                 sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
                 data = db.QuerySingle( sqlSelect, run, rup );
 
@@ -119,11 +118,12 @@
 
             <p class="form-actions">
                 <input type="submit" name="btn" value="Login" title="Login" />
+                <a href="~/signup" style="padding-left:1em">or signUp</a>
             </p>
 
         </fieldset>
     </form>
-
+    @*
     <form method="post" action="">
 
         <fieldset>
@@ -152,7 +152,7 @@
 
         </fieldset>
     </form>
-
+*@
 
 </body>
 </html>

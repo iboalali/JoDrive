@@ -1,0 +1,87 @@
+﻿@{
+
+    
+    var userNameMessage = string.Empty;
+    var passwordMessage = string.Empty;
+    
+    if ( IsPost ) {
+        var un = Request["uName"];
+        var up = Request["uPwd"];
+        var upr = Request["uPwdr"];
+        var em = Request["email"];
+
+        var db = Database.Open( "GP" );
+        var sqlSelect = string.Empty;
+        
+        
+        sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
+        var data = db.QuerySingle( sqlSelect, un, up );
+
+        if ( data != null ) {
+            userNameMessage = "User Name already exists";
+        } else {
+            if ( up != upr ) {
+                passwordMessage = "Password doesn't match";
+            } else {
+                int r = db.Execute( "INSERT INTO rc_Login VALUES (@0, @1, @2)", un, up, em );
+                if ( r == 0 ) {
+                    // Error
+                } else {
+                    Response.Redirect( "~/groups" );
+
+                }
+
+
+            }
+
+        }
+
+    }
+
+
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.js"></script>
+    <link type="text/css" rel="Stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/black-tie/jquery-ui.css" />
+    <link href="~/rcLayouts/default/css/loginStyle.css" rel="stylesheet" />
+</head>
+<body >
+    <form method="post" action="">
+
+        <fieldset>
+            <ol>
+                <li>
+                    <label for="uName">User:</label>
+                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" maxlength="50" /> @Html.ValidationMessage( "uName" ) @Html.Raw( userNameMessage )
+                </li>
+                <li>
+                    <label for="uPwd">Password:</label>
+                    <input type="password" name="uPwd" @Validation.For( "uPwd" ) id="uPwd" value="" /> @Html.ValidationMessage( "uPwd" )
+                </li>
+                <li>
+                    <label for="uPwdr">Password:</label>
+                    <input type="password" name="uPwdr" @Validation.For( "uPwdr" ) id="uPwdr" value="" /> @Html.ValidationMessage( "uPwdr" ) @Html.Raw( passwordMessage )
+                </li>
+                <li>
+                    <label for="email">Email:</label>
+                    <span>@Html.TextBox( "email", Request["email"] )</span> @Html.ValidationMessage( "email" )
+
+                </li>
+            </ol>
+            <p class="form-actions">
+                <input type="submit" name="btn" value="SignUp" title="SignUp" />
+            </p>
+
+        </fieldset>
+    </form>
+</body>
+</html>
