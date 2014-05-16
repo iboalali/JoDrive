@@ -1,4 +1,10 @@
 @{
+    
+    if(Session["userName"] != null){
+        Response.Redirect("~/home");
+
+    }
+
     //super simple login page
     //just to provide basic protection for control panel
     Validation.RequireField( "uName", "Required field" );

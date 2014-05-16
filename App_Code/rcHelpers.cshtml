@@ -8,9 +8,11 @@
 
     pageName = "~/" + pageName.ToLower() ;
     if  (pageName=="~/default") { pageName = "~/"; }
-
+    
 
    <ul class="@className" id="@id">
+        <li><a href="">@Session["userName"]</a></li>
+
     @foreach (var row in data)
     {
         string URL = row.smUrl;
@@ -19,9 +21,10 @@
             URL = Href(row.smURL);
         }
 
-       <li @if(pageName==row.smUrl){<text>class="active"</text>}><a href="@URL" target="@row.smTarget">@row.smName</a></li>
+       <li @if(pageName==row.smUrl){<text>class="active" </text>}><a href="@URL" target="@row.smTarget">@row.smName</a></li>
 
     }
+       <li><a href="~/logout" style="color: #ED1C24">Logout</a></li>
     </ul>
 }
 

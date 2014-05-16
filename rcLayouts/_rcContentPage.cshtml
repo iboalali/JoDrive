@@ -31,7 +31,7 @@
           <div class="container">
 
 
-            <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="navbar navbar-inverse navbar-fixed-top" style="border-radius:0px; background-color:#24272C " role="navigation">
               <div class="container">
                 <div class="navbar-header">
                   <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -40,7 +40,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                   </button>
-                  <a class="navbar-brand" href="/">@Html.Raw(@App.siteName)</a>
+                  <a class="navbar-brand" Style="color: #ED1C24" href="/">@Html.Raw(@App.siteName)</a>
                 </div>
                 <div class="navbar-collapse collapse">
                      @rcHelpers.SimpleMenu(className:"nav navbar-nav navbar-right",id:"rcSimpleMenu")
@@ -65,14 +65,14 @@
         *@
 
         <div class="row">
-            <div class="col-md-12">
-                <p></br></br></br></p>
+            <div class="col-md-12" style="padding-top:5em" >
+
             </div>
         </div>
 
             <!-- START 2 columns layout - right sidebar-->
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-3" style="padding-top:3.5em">
                     @RenderSection( "rcRight", false )
 
                 </div>
@@ -91,15 +91,16 @@
 
             <footer>
                 <!--<p class="pull-right"><a href="#">Back to top</a></p>-->
-                <div class="row">
-					<p></br></br></br></p>
-                    <div class="col-md-3"></div>
-                    <div class="col-md-6">
+                <div class="row" style="padding-top:10em">
+					
+                    <div class="col-md-3">
+                        <p style="margin-left: 2%; margin-top: -50px">&copy;  @DateTime.Now.Year @App.siteName  </p>
+                    </div>
+                    <div class="col-md-9">
 
-                        <p style="margin-left: 8%; margin-top: -50px">&copy;  @DateTime.Now.Year @App.siteName  </p>
+                        
 
                     </div>
-                    <div class="col-md-3"></div>
 
                 </div>
 
