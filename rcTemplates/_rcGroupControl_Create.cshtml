@@ -14,23 +14,8 @@
     string popup = string.Empty;
 
 
-    if ( IsPost && Validation.IsValid() ) {
-        switch ( Request.Form["btn"] ) {
-            case " Create ":
-                
-                message = txtbox + " created";
-                popup = "";
-                break;
-
-            case " Modify ":
-                message = selectedGroup.ToString() + " Modified";
-                break;
-
-            default:
-                message = txtbox + " not created";
-                
-                break;
-        }
+    if ( IsPost ) {
+        
 
     }
 }
@@ -61,34 +46,6 @@
     </form>
     <p>
         @Html.Raw( message )
-    </p>
-
-    <form action="" method="post">
-        <p>
-            <label for="groupsList">Groups:</label>
-            <select id="groupsList" name="groupsList">
-                @{
-                    foreach(var item in data){
-                        if(item.owner == userName){
-                            <option value=@item.groupName selected="selected" >@item.groupName</option>
-                        }
-                    }
-                }
-            </select>        
-        </p>
-        <p>
-            <input type="submit" name="btn" value=" Modify ">
-        </p>
-    </form>
-    <p>
-        @Html.Raw( message )
-        @{
-            if ( selectedGroup != null ) {
-                Html.Raw( selectedGroup.ToString() );
-                
-            }
-            
-        }
     </p>
 </body>
 </html>

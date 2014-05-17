@@ -1,0 +1,32 @@
+﻿@{
+   var grougId = Request["id"];
+
+   var db = Database.Open( "GP" );
+   var sqlSelect = "Select * From rc_groups Where groupID= @0";
+   var data = db.Query(sqlSelect, grougId); 
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+
+        <link href="/menu_source/styles.css" rel="stylesheet" type="text/css">
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script type='text/javascript' src='/menu_source/menu_jquery.js'></script>
+    </head>
+    <body>
+        <div id='cssmenu' style="width: 100%">
+        <ul>
+            <li><a href='~/creategroup'><span>Upload Files</span></a></li>
+            <li><a href="deletefiles?id=@grougId"><span>Delete Files</span></a></li>                           
+            <li><a href='~/renamefiles?id=@grougId'><span>Remane Files</span></a></li>
+            <li><a href='~/viewmembers?id=@grougId'><span>View Members</span></a></li>
+            <li><a href='~/removegroup'><span>Remane Group</span></a></li>
+            <li class='last'><a href='~/leavegroup'><span>Delete Group</span></a></li>
+        </ul>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,71 @@
+﻿@{
+    var grougId = Request["id"];
+
+    var db = Database.Open( "GP" );
+    var sqlSelect = "Select * From rc_Files Where groupID= @0";
+    var data = db.Query(sqlSelect, grougId);
+
+    if (IsPost)
+    {
+        var fileId = Request.Form["image"];
+        //get the download file path
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <title></title>
+    </head>
+    <body>
+        
+
+        
+        @if ( data != null ) 
+       {
+           <div class="table" >
+           <table>
+
+               <colgroup>
+                 <col span="1" style="width: 45%;">
+                 <col span="1" style="width: 30%;">
+                 <col span="1" style="width: 25%;">
+                 <col span="1" style="width: 5%;">
+              </colgroup>
+                   <tr>
+                       <th style="border-left: none"> FILE NAME </th>
+                       <th> MODIFIED </th>
+                       <th> </th>
+                       <th style="border-left: none"> </th>
+                   </tr>
+           @foreach ( var item in data ) 
+           {
+                   <tr>
+                       <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3"> 
+                             @item.fileName
+                       </td>
+                       <td> blah </td>
+                       <td> hon </td>
+                       <td> 
+                           <form method="post">
+                               <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" />
+                           </form>
+             
+                       </td>
+                   </tr>  
+           }
+            </table>
+          </div> 
+        }
+        else 
+        {
+         @Html.Raw("ERROR !!")
+        }   
+          
+    </body>
+</html>
