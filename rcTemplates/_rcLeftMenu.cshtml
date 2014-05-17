@@ -1,28 +1,28 @@
 ﻿@{
-    var pageName = Request.Url.ToString().Substring(Request.Url.ToString().LastIndexOf('/') + 1);
+    var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 }
 
 <!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title></title>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
 
-        <link href="/menu_source/styles.css" rel="stylesheet" type="text/css">
-        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-        <script type='text/javascript' src='/menu_source/menu_jquery.js'></script>
-    </head>
-    <body>
-        <div id='cssmenu' style="width: 100%">
+    <link href="/menu_source/styles.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type='text/javascript' src='/menu_source/menu_jquery.js'></script>
+</head>
+<body>
+    <div id='cssmenu' style="width: 100%">
         <ul>
-            <li @if(pageName == "creategroup"){<text> class="active" </text>} ><a href='~/creategroup'><span>Create Groups</span></a></li>
-            <li @if(pageName == "modifygroup"){<text> class="active" </text>} ><a href='~/modifygroup'><span>Modify Groups</span></a></li>
-            <li @if(pageName == "removegroup"){<text> class="active" </text>} ><a href='~/removegroup'><span>Remove Groups</span></a></li>
-            <li  @if(pageName == "leavegroup"){<text> class="active last" </text>}else{ <text> class='last' </text> }><a href='~/leavegroup'><span>Leave Groups</span></a></li>
+            <li @if ( pageName == "creategroup" ) { <text> class="active" </text> }><a href='~/creategroup'><span>Create Groups</span></a></li>
+            @*<li @if(pageName == "modifygroup"){<text> class="active" </text>} ><a href='~/modifygroup'><span>Modify Groups</span></a></li>*@
+            <li @if ( pageName == "removegroup" ) { <text> class="active" </text> }><a href='~/removegroup'><span>Remove Groups</span></a></li>
+            <li @if ( pageName == "leavegroup" ) { <text> class="active last" </text> } else { <text> class='last' </text>  }><a href='~/leavegroup'><span>Leave Groups</span></a></li>
         </ul>
-        </div>
+    </div>
 
-       
-    </body>
+
+</body>
 </html>

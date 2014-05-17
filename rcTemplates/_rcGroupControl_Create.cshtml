@@ -1,22 +1,52 @@
 @{
+    if(Session["userName"] == null){
+        Response.Redirect("~/");
+    }    
+
     Validation.RequireField( "groupName", "Required field" );
 
     var db = Database.Open( "GP" );
-    var sqlSelect = "Select * from rc_groups where owner=@0";
-    var data = db.Query( sqlSelect, ( string ) Session["userName"] );
-    string userName = ( string ) Session["userName"];
 
-
-
-    var selectedGroup = Request["groupsList"];
-    var txtbox = Request.Form["groupName"];
-    string message = string.Empty;
-    string popup = string.Empty;
-
-
+    var s_groupName = Request.Form["groupName"];
+    var s_groupDescription = Request.Form["groupDescription"];
+    int s_groupID;
+    
+        
     if ( IsPost ) {
         
+        string userName = ( string ) Session["userName"];
 
+        var sqlSelect = "Select * from rc_groups";
+
+        var data = db.Query( sqlSelect );
+        Random random = new Random();
+        while ( true ) {
+            s_groupID = random.Next();
+
+            foreach ( var item in data ) {
+                if ( item.groupID == s_groupID ) {
+                    continue;
+                }
+            }
+
+            break;
+        }
+
+        sqlSelect = "INSERT INTO rc_groups(groupName, owner, groupID, description, date)"
+                  + "VALUES ( @0, @1, @2, @3, @4 )";        
+        //sqlSelect = "INSERT INTO rc_groups "
+        //            + "SELECT groupName, owner, groupID, description"
+        //            + "WHERE groupName=@0 and owner=@1 and groupID=@2 and description=@3";
+        db.Execute( sqlSelect, s_groupName, userName, s_groupID, s_groupDescription,
+                        DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() );
+
+
+        sqlSelect = "INSERT INTO rc_UserGroups(groupID, userName)"
+                  + "VALUES ( @0, @1 )";        
+        //sqlSelect = "INSERT INTO rc_UserGroups where groupID=@0 and userName=@1";
+        db.Execute( sqlSelect, s_groupID, userName );
+
+        Response.Redirect("~/files?id=" + s_groupID.ToString());
     }
 }
 
@@ -32,20 +62,21 @@
     <link type="text/css" rel="Stylesheet" href="~/rcLayouts/default/css/popupStyle.css" />
 
 </head>
-<body>
-    <span class="popupClass" ></span>
-    
+<body>    
     <form action="" method="post">
         <p>
-            <label for="groupName">Create Group</label><br>
-            <input type="text" name="groupName" @Validation.For( "groupName" ) id="groupName"> @Html.ValidationMessage( "uName" )
+            <label for="groupName">Group Name</label><br>
+            <input type="text" name="groupName" @Validation.For( "groupName" ) id="groupName"> @Html.ValidationMessage( "groupName" )
         </p>
+
+        <p>
+            <label for="groupName">Group Description</label><br>
+            <input type="text" name="groupDescription" @Validation.For( "groupDescription" ) id="groupName"> <em style="padding-left: 1em">Optional</em>
+        </p>
+
         <p>
             <input type="submit" name="btn" value=" Create ">
         </p>
     </form>
-    <p>
-        @Html.Raw( message )
-    </p>
 </body>
 </html>

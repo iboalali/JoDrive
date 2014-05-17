@@ -1,7 +1,7 @@
 @{
-    
-    if(Session["userName"] != null){
-        Response.Redirect("~/home");
+
+    if ( Session["userName"] != null ) {
+        Response.Redirect( "~/home" );
 
     }
 
@@ -27,70 +27,32 @@
     var sqlSelect = string.Empty;
     if ( IsPost ) {
 
-        switch ( Request.Form["btn"] ) {
-            case "Login":
-                var un = Request["uName"];
-                var up = Request["uPwd"];
+        var un = Request["uName"];
+        var up = Request["uPwd"];
 
 
-                sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
-                var data = db.QuerySingle( sqlSelect, un, up );
+        sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
+        var data = db.QuerySingle( sqlSelect, un, up );
 
-                if ( data != null ) {
-                    Session["userName"] = un;
-                    Response.Redirect( "~/home" );
+        if ( data != null ) {
 
-                } else {
-                    message = "Invalid username or password";
+            if ( un == "admin" ) {
+                message = "Invalid username or password";                
+                
+            } else {
+                Session["userName"] = un;
+                Response.Redirect( "~/home" );
+                
+            }
+            
+        } else {
+            message = "Invalid username or password";
 
-
-
-                }
-
-
-                break;
-
-            case "SignUp":
-
-                var run = Request["suName"];
-                var rup = Request["suPwd"];
-                var upr = Request["suPwdr"];
-                var rem = Request["semail"];
-
-                sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
-                data = db.QuerySingle( sqlSelect, run, rup );
-
-                if ( data != null ) {
-                    userNameMessage = "User Name already exists";
-                } else {
-                    if ( rup != upr ) {
-                        passwordMessage = "Password doesn't match";
-                    } else {
-                        int r = db.Execute( "INSERT INTO rc_Login VALUES (@0, @1, @2)", run, rup, rem );
-                        if ( r == 0 ) {
-                            // Error
-                        } else {
-                            Response.Redirect( "~/groups" );
-                            
-                        }
-
-
-                    }
-
-                }
-
-
-                break;
-            default:
-                break;
         }
 
-
-
     }
-
-
 }
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -110,7 +72,7 @@
             <ol>
                 <li>
                     <label for="uName">User:</label>
-                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value=""  /> @Html.ValidationMessage( "uName" )
+                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" /> @Html.ValidationMessage( "uName" )
                 </li>
                 <li>
                     <label for="uPwd">Password:</label>
@@ -129,36 +91,7 @@
 
         </fieldset>
     </form>
-    @*
-    <form method="post" action="">
 
-        <fieldset>
-            <ol>
-                <li>
-                    <label for="suName">User:</label>
-                    <input type="text" name="suName" @Validation.For( "suName" ) id="suName" value="" maxlength="50" /> @Html.ValidationMessage( "suName" ) @Html.Raw( userNameMessage )
-                </li>
-                <li>
-                    <label for="suPwd">Password:</label>
-                    <input type="password" name="suPwd" @Validation.For( "suPwd" ) id="suPwd" value="" /> @Html.ValidationMessage( "suPwd" )
-                </li>
-                <li>
-                    <label for="suPwdr">Password:</label>
-                    <input type="password" name="suPwdr" @Validation.For( "suPwdr" ) id="suPwdr" value="" /> @Html.ValidationMessage( "suPwdr" ) @Html.Raw( passwordMessage )
-                </li>
-                <li>
-                    <label for="email">Email:</label>
-                    <span>@Html.TextBox( "semail", Request["semail"] )</span> @Html.ValidationMessage( "semail" )
-
-                </li>
-            </ol>
-            <p class="form-actions">
-                <input type="submit" name="btn" value="SignUp" title="SignUp" />
-            </p>
-
-        </fieldset>
-    </form>
-*@
 
 </body>
 </html>
