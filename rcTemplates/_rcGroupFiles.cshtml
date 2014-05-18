@@ -5,13 +5,24 @@
         Response.Redirect( "~/?ReturnURL=" + pageName );
 
     }
-    var user = Session["userName"];
+    var user = ( string ) Session["userName"];
 
     var groupId = Request["id"];
 
     var db = Database.Open( "GP" );
     var sqlSelect = "Select * From rc_Files Where groupID= @0";
     var data = db.Query( sqlSelect, groupId );
+
+    sqlSelect = "SELECT userName FROM rc_UserGroups WHERE groupID=@0";
+    var u_data = db.Query( sqlSelect, groupId );
+
+    bool isMember = false;
+    foreach ( var item in u_data ) {
+        if ( item.userName.ToString().ToLower() == user.ToLower() ) {
+            isMember = true;
+            break;
+        }
+    }
 
     sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
     var g_data = db.QuerySingle( sqlSelect, groupId );
@@ -37,7 +48,7 @@
 
     @if ( data != null ) {
 
-        if ( data.Count() > 0 ) {
+        if ( isMember ) {
 
             <p>
                 <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
@@ -45,38 +56,46 @@
                 <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
             </p>
 
-            <div class="table">
-                <table>
+            if ( data.Count() > 0 ) {
 
-                    <colgroup>
-                        <col span="1" style="width: 45%;">
-                        <col span="1" style="width: 30%;">
-                        <col span="1" style="width: 25%;">
-                        <col span="1" style="width: 5%;">
-                    </colgroup>
-                    <tr>
-                        <th style="border-left: none"> FILE NAME </th>
-                        <th> MODIFIED </th>
-                        <th> </th>
-                        <th style="border-left: none"> </th>
-                    </tr>
-                    @foreach ( var item in data ) {
+
+
+                <div class="table">
+                    <table>
+
+                        <colgroup>
+                            <col span="1" style="width: 45%;">
+                            <col span="1" style="width: 30%;">
+                            <col span="1" style="width: 25%;">
+                            <col span="1" style="width: 5%;">
+                        </colgroup>
                         <tr>
-                            <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
-                                @item.fileName
-                            </td>
-                            <td> blah </td>
-                            <td> hon </td>
-                            <td>
-                                <form method="post">
-                                    <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" />
-                                </form>
-
-                            </td>
+                            <th style="border-left: none"> FILE NAME </th>
+                            <th> MODIFIED </th>
+                            <th> </th>
+                            <th style="border-left: none"> </th>
                         </tr>
-                    }
-                </table>
-            </div>
+                        @foreach ( var item in data ) {
+                            <tr>
+                                <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
+                                    @item.fileName
+                                </td>
+                                <td> blah </td>
+                                <td> hon </td>
+                                <td>
+                                    <form method="post">
+                                        <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" />
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            } else {
+                @Html.Raw( "You don't have any files, click here to start uploading files" )
+
+            }
         } else {
             @Html.Raw( "You don't have access to this group, please contact the group's admin here" )
         }
