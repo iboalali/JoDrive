@@ -37,14 +37,38 @@
         if ( data != null ) {
 
             if ( un == "admin" ) {
-                message = "Invalid username or password";                
-                
+                message = "Invalid username or password";
+
             } else {
                 Session["userName"] = un;
-                Response.Redirect( "~/home" );
-                
+                sqlSelect = "SELECT userName FROM rc_SessionInfo";
+                data = db.QuerySingle( sqlSelect );
+
+                if ( data != null ) {
+
+                    if ( Request["ReturnURL"] != null && (string) Session["userName"] == data.userName ) {
+                        Response.Redirect( "~/" + Request["ReturnURL"] );
+
+                    } else {
+                        sqlSelect = "DELETE FROM rc_SessionInfo WHERE userName=@0";
+                        db.Execute( sqlSelect, data.userName );
+                        
+                        sqlSelect = "INSERT INTO rc_SessionInfo(userName) VALUES(@0)";
+                        db.Execute( sqlSelect, un );
+                        Response.Redirect( "~/home" );
+                        
+                    }
+                } else {
+                    
+                    sqlSelect = "INSERT INTO rc_SessionInfo(userName) VALUES(@0)";
+                    db.Execute( sqlSelect, un );
+                    
+                    Response.Redirect( "~/home" );
+
+                }
+
             }
-            
+
         } else {
             message = "Invalid username or password";
 
@@ -67,26 +91,27 @@
 </head>
 <body>
     <form method="post" action="">
-        <fieldset style="background-color: white; width:312px">
+        <fieldset style="background-color: white; width: 312px; font-size: 10px">
             <!--<legend>Login</legend>-->
             <ol>
                 <li>
-                    <label for="uName">User:</label>
-                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" /> @Html.ValidationMessage( "uName" )
+                    <label for="uName">User Name:</label>
+                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" />
+                    <p>@Html.ValidationMessage( "uName" )</p>
                 </li>
                 <li>
                     <label for="uPwd">Password:</label>
-                    <input type="password" name="uPwd" @Validation.For( "uPwd" ) id="uPwd" value="" /> @Html.ValidationMessage( "uPwd" )
+                    <input type="password" name="uPwd" @Validation.For( "uPwd" ) id="uPwd" value="" />
+                    <p>@Html.ValidationMessage( "uPwd" )</p>
                 </li>
                 <li>
-                    @* @Html.ValidationMessage( "LogInError" ); *@
-                    <p style="color: #f00; font-size: medium"> @Html.Raw( message )</p>
+                    <p style="color: #f00; font-size: 12px"> @Html.Raw( message )</p>
                 </li>
             </ol>
 
             <p class="form-actions">
                 <input type="submit" name="btn" value="Login" title="Login" />
-                <a href="~/signup" style="padding-left:1em">or SignUp</a>
+                <a href="~/signup" style="padding-left: 1em; font-size: 12px">or SignUp</a>
             </p>
 
         </fieldset>

@@ -1,12 +1,23 @@
 ﻿@{
-    var grougId = Request["id"];
+    if ( Session["userName"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+
+    }
+    var user = Session["userName"];
+
+    var groupId = Request["id"];
 
     var db = Database.Open( "GP" );
     var sqlSelect = "Select * From rc_Files Where groupID= @0";
-    var data = db.Query(sqlSelect, grougId);
+    var data = db.Query( sqlSelect, groupId );
 
-    if (IsPost)
-    {
+    sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
+    var g_data = db.QuerySingle( sqlSelect, groupId );
+
+
+    if ( IsPost ) {
         var fileId = Request.Form["image"];
         //get the download file path
     }
@@ -15,57 +26,62 @@
 <!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
-         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
-         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
-        <title></title>
-    </head>
-    <body>
-        
+<head>
+    <meta charset="utf-8" />
+    <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
 
-        
-        @if ( data != null ) 
-       {
-           <div class="table" >
-           <table>
+    @if ( data != null ) {
 
-               <colgroup>
-                 <col span="1" style="width: 45%;">
-                 <col span="1" style="width: 30%;">
-                 <col span="1" style="width: 25%;">
-                 <col span="1" style="width: 5%;">
-              </colgroup>
-                   <tr>
-                       <th style="border-left: none"> FILE NAME </th>
-                       <th> MODIFIED </th>
-                       <th> </th>
-                       <th style="border-left: none"> </th>
-                   </tr>
-           @foreach ( var item in data ) 
-           {
-                   <tr>
-                       <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3"> 
-                             @item.fileName
-                       </td>
-                       <td> blah </td>
-                       <td> hon </td>
-                       <td> 
-                           <form method="post">
-                               <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" />
-                           </form>
-             
-                       </td>
-                   </tr>  
-           }
-            </table>
-          </div> 
+        if ( data.Count() > 0 ) {
+
+            <p>
+                <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+                <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.owner.ToString() == user ) { Html.Raw( "You" ); } else { @g_data.owner }</span>
+                <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+            </p>
+
+            <div class="table">
+                <table>
+
+                    <colgroup>
+                        <col span="1" style="width: 45%;">
+                        <col span="1" style="width: 30%;">
+                        <col span="1" style="width: 25%;">
+                        <col span="1" style="width: 5%;">
+                    </colgroup>
+                    <tr>
+                        <th style="border-left: none"> FILE NAME </th>
+                        <th> MODIFIED </th>
+                        <th> </th>
+                        <th style="border-left: none"> </th>
+                    </tr>
+                    @foreach ( var item in data ) {
+                        <tr>
+                            <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
+                                @item.fileName
+                            </td>
+                            <td> blah </td>
+                            <td> hon </td>
+                            <td>
+                                <form method="post">
+                                    <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" />
+                                </form>
+
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        } else {
+            @Html.Raw( "You don't have access to this group, please contact the group's admin here" )
         }
-        else 
-        {
-         @Html.Raw("ERROR !!")
-        }   
-          
-    </body>
+
+    }
+
+</body>
 </html>

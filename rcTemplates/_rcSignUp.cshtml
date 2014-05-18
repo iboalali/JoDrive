@@ -3,6 +3,7 @@
     
     var userNameMessage = string.Empty;
     var passwordMessage = string.Empty;
+    var emailMessage = string.Empty;
     
     if ( IsPost ) {
         var un = Request["uName"];
@@ -12,14 +13,25 @@
 
         var db = Database.Open( "GP" );
         var sqlSelect = string.Empty;
+        bool valid = true;
         
-        
-        sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
+        sqlSelect = "SELECT * from rc_Login where rcUser=@0 and rcPwd=@1";
         var data = db.QuerySingle( sqlSelect, un, up );
 
+        sqlSelect = "SELECT * from rc_Login WHERE email=@0";
+        var e_data = db.QuerySingle( sqlSelect, em );
+
+        if ( e_data != null ) {
+            emailMessage = "There is an Account with this email";
+            valid = false;
+        }
+        
         if ( data != null ) {
-            userNameMessage = "User Name already exists";
-        } else {
+            userNameMessage = "User Name already exist";
+            valid = false;
+        }
+        
+        if ( valid ) {
             if ( up != upr ) {
                 passwordMessage = "Password doesn't match";
             } else {
@@ -27,18 +39,17 @@
                 if ( r == 0 ) {
                     // Error
                 } else {
+                    Session["userName"] = un;
                     Response.Redirect( "~/groups" );
 
                 }
 
 
             }
-
         }
+        
 
     }
-
-
 }
 
 <!DOCTYPE html>
@@ -58,28 +69,35 @@
     <form method="post" action="">
 
 
-        <fieldset style="background-color:white; width:312px">
+        <fieldset style="background-color:white; width:312px; font-size:10px">
             <ol>
                 <li>
-                    <label for="uName">User:</label>
-                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" /> @Html.ValidationMessage( "uName" ) @Html.Raw( userNameMessage )
+                    <label for="uName">User Name:</label>
+                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" />
+                    <p>@Html.ValidationMessage( "uName" )</p>
+                    <p> @Html.Raw( userNameMessage )</p>
                 </li>
                 <li>
                     <label for="uPwd">Password:</label>
-                    <input type="password" name="uPwd" @Validation.For( "uPwd" ) id="uPwd" value="" /> @Html.ValidationMessage( "uPwd" )
+                    <input type="password" name="uPwd" @Validation.For( "uPwd" ) id="uPwd" value="" />
+                    <p>@Html.ValidationMessage( "uPwd" )</p>
                 </li>
                 <li>
                     <label for="uPwdr">Password:</label>
-                    <input type="password" name="uPwdr" @Validation.For( "uPwdr" ) id="uPwdr" value="" /> @Html.ValidationMessage( "uPwdr" ) @Html.Raw( passwordMessage )
+                    <input type="password" name="uPwdr" @Validation.For( "uPwdr" ) id="uPwdr" value="" />
+                    <p>@Html.ValidationMessage( "uPwdr" )</p>
+                    <p>@Html.Raw( passwordMessage )</p>
                 </li>
                 <li>
                     <label for="email">Email:</label>
-                    <span>@Html.TextBox( "email", Request["email"] )</span> @Html.ValidationMessage( "email" )
+                    <span>@Html.TextBox( "email", Request["email"] )</span>
+                    <p>@Html.ValidationMessage( "email" )</p>
+                    <p>@Html.Raw( emailMessage )</p>
 
                 </li>
             </ol>
             <p class="form-actions">
-                <input type="submit" name="btn" value="SignUp" title="SignUp" /> <a href="~/" style="padding-left:1em">or Login</a>
+                <input type="submit" name="btn" value="SignUp" title="SignUp" /> <a href="~/" style="padding-left: 1em; font-size: 12px">or Login</a>
             </p>
 
         </fieldset>
