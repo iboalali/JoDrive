@@ -10,12 +10,35 @@
     var groupId = Request["id"];
 
     var fileName = "";
-    if (IsPost) {
+    if ( IsPost ) {
         var fileSavePath = "";
         var uploadedFile = Request.Files[0];
         fileName = Path.GetFileName(uploadedFile.FileName);
         fileSavePath = Server.MapPath("~/UploadedFiles/" + groupId.ToString() + "/" + fileName);
         uploadedFile.SaveAs(fileSavePath);
+
+        var db = Database.Open( "GP" );
+        var sqlSelect = "SELECT * FROM rc_Files";
+        var data = db.Query(sqlSelect);
+
+        int fileID;
+        Random random = new Random();
+        while ( true ) {
+            fileID = random.Next();
+
+            foreach ( var item in data ) {
+                if ( item.fileID == fileID ) {
+                    continue;
+                }
+            }
+
+            break;
+        }
+
+        sqlSelect = "INSERT INTO rc_Files(fileID, fileName, filePath, groupID, date, currentOwner) VALUES (@0, @1, @2, @3, @4, @5)";
+        db.Execute( sqlSelect, fileID, fileName, fileSavePath, groupId, (string)Session["userName"],
+                            DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() );
+
     }
 
     /*
@@ -56,11 +79,12 @@
                 <p>
                 <input name="fileUpload" type="file">
                 </p>
+                
             </div>
     </div>
 
         <div class="file-upload-buttons">
-            <input type="submit" value="Upload">
+            <input type="submit" value="Upload"> <span style="padding-left: 1em"><a href="~/files?@groupId">return to the group</a></span>
         </div>
         
     @if (IsPost) {

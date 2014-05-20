@@ -71,8 +71,8 @@
                         </colgroup>
                         <tr>
                             <th style="border-left: none"> FILE NAME </th>
-                            <th> MODIFIED </th>
-                            <th> </th>
+                            <th> CURRENT OWNER </th>
+                            <th> DATE MODIFIED </th>
                             <th style="border-left: none"> </th>
                         </tr>
                         @foreach ( var item in data ) {
@@ -80,8 +80,8 @@
                                 <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
                                     @item.fileName
                                 </td>
-                                <td> blah </td>
-                                <td> hon </td>
+                                <td> @item.date </td>
+                                <td> @item.currentOwner </td>
                                 <td>
                                     <form method="post">
                                         <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" />
@@ -93,7 +93,9 @@
                     </table>
                 </div>
             } else {
-                @Html.Raw( "You don't have any files, click here to start uploading files" )
+                <p>You don't have any files, click <a href='~/uploadfiles?id=@groupId'>here</a> to start uploading</p>
+                
+                
 
             }
         } else {
