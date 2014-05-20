@@ -1,0 +1,19 @@
+﻿@{
+    if ( Session["userName"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Home</title>
+    </head>
+    <body>
+        
+    </body>
+</html>
