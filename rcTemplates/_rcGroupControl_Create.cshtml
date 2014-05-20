@@ -1,7 +1,9 @@
 @{
-    if(Session["userName"] == null){
-        Response.Redirect("~/");
-    }    
+    if ( Session["userName"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+    }
 
     Validation.RequireField( "groupName", "Required field" );
 
@@ -10,10 +12,10 @@
     var s_groupName = Request.Form["groupName"];
     var s_groupDescription = Request.Form["groupDescription"];
     int s_groupID;
-    
-        
+
+
     if ( IsPost ) {
-        
+
         string userName = ( string ) Session["userName"];
 
         var sqlSelect = "Select * from rc_groups";
@@ -33,7 +35,7 @@
         }
 
         sqlSelect = "INSERT INTO rc_groups(groupName, owner, groupID, description, date)"
-                  + "VALUES ( @0, @1, @2, @3, @4 )";        
+                  + "VALUES ( @0, @1, @2, @3, @4 )";
         //sqlSelect = "INSERT INTO rc_groups "
         //            + "SELECT groupName, owner, groupID, description"
         //            + "WHERE groupName=@0 and owner=@1 and groupID=@2 and description=@3";
@@ -42,18 +44,27 @@
 
 
         sqlSelect = "INSERT INTO rc_UserGroups(groupID, userName)"
-                  + "VALUES ( @0, @1 )";        
+                  + "VALUES ( @0, @1 )";
         //sqlSelect = "INSERT INTO rc_UserGroups where groupID=@0 and userName=@1";
         db.Execute( sqlSelect, s_groupID, userName );
 
-        Response.Redirect("~/files?id=" + s_groupID.ToString());
+        var root = Server.MapPath( "/" );
+        var foldername =  "uploadedFiles/" + s_groupID.ToString();
+        var path = root + foldername;
+        if ( !Directory.Exists( path ) ) {
+            Directory.CreateDirectory( path );
+        }
+
+
+
+        Response.Redirect( "~/files?id=" + s_groupID.ToString() );
     }
 }
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>Create Group</title>
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.js"></script>
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.js"></script>
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
@@ -62,7 +73,7 @@
     <link type="text/css" rel="Stylesheet" href="~/rcLayouts/default/css/popupStyle.css" />
 
 </head>
-<body>    
+<body>
     <form action="" method="post">
         <p>
             <label for="groupName">Group Name</label><br>

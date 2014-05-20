@@ -5,6 +5,11 @@
     var passwordMessage = string.Empty;
     var emailMessage = string.Empty;
     
+    Validation.Add( "email", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
+    Validation.RequireField( "uName", "Required field" );
+    Validation.RequireField( "uPwd", "Required field" );
+        Validation.RequireField( "uPwdr", "Required field" );
+
     if ( IsPost ) {
         var un = Request["uName"];
         var up = Request["uPwd"];
