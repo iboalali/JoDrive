@@ -1,0 +1,47 @@
+﻿@{
+    if ( Session["userName"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+    }
+
+    Validation.Add( "email", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
+
+    if(IsPost){
+        var em = Request["email"];
+        var db = Database.Open( "GP" );
+        var sqlSelect = "SELECT rcUser FROM rcLogin WHERE email=@0";
+        var data = db.QuerySingle(sqlSelect, em);
+
+
+
+
+    }
+
+
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Add Members</title>
+    </head>
+    <body>
+
+        <fieldset>
+        <form action="" method="post">
+        <p>
+            <label for="email">Email</label><br>
+            <input type="text" name="email" @Validation.For( "email" ) id="email"> @Html.ValidationMessage( "email" )
+        </p>
+
+        <p>
+            <input type="submit" name="btn" value=" Create ">
+        </p>
+    </form>
+
+            </fieldset>
+    </body>
+</html>

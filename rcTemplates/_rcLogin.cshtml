@@ -19,8 +19,7 @@
     Validation.RequireField( "semail", "Required field" );
 
 
-    Validation.Add( "semail", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
-
+    
     string userNameMessage = string.Empty;
     string passwordMessage = string.Empty;
     var db = Database.Open( "GP" );

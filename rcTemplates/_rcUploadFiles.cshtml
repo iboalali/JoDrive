@@ -9,7 +9,17 @@
 
     var groupId = Request["id"];
 
-    var message = "";
+    var fileName = "";
+    if (IsPost) {
+        var fileSavePath = "";
+        var uploadedFile = Request.Files[0];
+        fileName = Path.GetFileName(uploadedFile.FileName);
+        fileSavePath = Server.MapPath("~/UploadedFiles/" + groupId.ToString() + "/" + fileName);
+        uploadedFile.SaveAs(fileSavePath);
+    }
+
+    /*
+        var message = "";
     if ( IsPost ) {
         var fileName = "";
         var fileSavePath = "";
@@ -19,7 +29,7 @@
             var uploadedFile = Request.Files[i];
             if ( uploadedFile.ContentLength > 0 ) {
                 fileName = Path.GetFileName( uploadedFile.FileName );
-                fileSavePath = Server.MapPath( "~/UploadedFiles/" + groupId.ToString() + fileName );
+                fileSavePath = Server.MapPath( "~/UploadedFiles/" + groupId.ToString() + "/" + fileName );
                 uploadedFile.SaveAs( fileSavePath );
                 uploadedCount++;
             }
@@ -27,6 +37,7 @@
         message = "File upload complete. Total files uploaded: " +
         uploadedCount.ToString();
     }
+    */
 }
 <!DOCTYPE html>
 <html>
@@ -37,18 +48,42 @@
     <form id="myForm" method="post"
           enctype="multipart/form-data"
           action="">
-        <div>
-            <h1>File Upload - Multiple-File Example</h1>
-            @if ( !IsPost ) {
-                @FileUpload.GetHtml(
-            initialNumberOfFiles: 2,
-            allowMoreFilesToBeAdded: true,
-            includeFormTag: true,
-            addText: "Add another file",
-            uploadText: "Upload" )
-            }
-            <span>@message</span>
+<div>
+            <h1>Upload File(s)</h1>
+                    
+    <div class="file-upload" id="file-upload-0">
+            <div>
+                <p>
+                <input name="fileUpload" type="file">
+                </p>
+            </div>
+    </div>
+
+        <div class="file-upload-buttons">
+            <input type="submit" value="Upload">
         </div>
+        
+    @if (IsPost) {
+            <span>File uploaded!</span><br>
+}
+        </div>      
+
+
+
+
+@*  
+        <div>
+            <h1>Upload File(s)</h1>
+            @FileUpload.GetHtml()
+        initialNumberOfFiles:1,
+        allowMoreFilesToBeAdded:false,
+        includeFormTag:true,
+        uploadText:"Upload")
+        @if (IsPost) {
+            <span>File uploaded!</span><br/>
+        }
+        </div>
+    *@
     </form>
 </body>
 </html>
