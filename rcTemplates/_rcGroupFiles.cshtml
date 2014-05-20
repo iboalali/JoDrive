@@ -52,7 +52,7 @@
 
             <p>
                 <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
-                <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.owner.ToString() == user ) { Html.Raw( "You" ); } else { @g_data.owner }</span>
+                <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.owner.ToString() == user ) { <text>You</text> } else { @g_data.owner }</span>
                 <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
             </p>
 
