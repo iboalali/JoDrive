@@ -36,8 +36,8 @@
         }
 
         sqlSelect = "INSERT INTO rc_Files(fileID, fileName, filePath, groupID, date, currentOwner) VALUES (@0, @1, @2, @3, @4, @5)";
-        db.Execute( sqlSelect, fileID, fileName, fileSavePath, groupId, (string)Session["userName"],
-                            DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() );
+        db.Execute( sqlSelect, fileID, fileName, fileSavePath, groupId,
+                   DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString(), ( string ) Session["userName"] );
 
     }
 

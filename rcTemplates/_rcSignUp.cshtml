@@ -1,14 +1,16 @@
 ﻿@{
 
-    
+    int reqID = 0;
+    int.TryParse( Request["reqID"], out reqID );
+
     var userNameMessage = string.Empty;
     var passwordMessage = string.Empty;
     var emailMessage = string.Empty;
-    
+
     Validation.Add( "email", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
     Validation.RequireField( "uName", "Required field" );
     Validation.RequireField( "uPwd", "Required field" );
-        Validation.RequireField( "uPwdr", "Required field" );
+    Validation.RequireField( "uPwdr", "Required field" );
 
     if ( IsPost ) {
         var un = Request["uName"];
@@ -19,7 +21,7 @@
         var db = Database.Open( "GP" );
         var sqlSelect = string.Empty;
         bool valid = true;
-        
+
         sqlSelect = "SELECT * from rc_Login where rcUser=@0 and rcPwd=@1";
         var data = db.QuerySingle( sqlSelect, un, up );
 
@@ -30,12 +32,12 @@
             emailMessage = "There is an Account with this email";
             valid = false;
         }
-        
+
         if ( data != null ) {
             userNameMessage = "User Name already exist";
             valid = false;
         }
-        
+
         if ( valid ) {
             if ( up != upr ) {
                 passwordMessage = "Password doesn't match";
@@ -44,6 +46,36 @@
                 if ( r == 0 ) {
                     // Error
                 } else {
+
+                    if ( reqID != 0 ) {
+
+                        sqlSelect = "SELECT * FROM rc_Requests WHERE id=@0";
+                        var reqData = db.QuerySingle( sqlSelect, reqID );
+
+                        if ( reqData != null ) {
+                            string[] date = ( ( string ) reqData.date ).Split( new char[] { ' ' },
+                                                                StringSplitOptions.RemoveEmptyEntries );
+
+                            DateTime reqDate = Convert.ToDateTime( date[0] );
+                            reqDate = reqDate.AddMonths( 1 );
+
+                            if ( reqDate.CompareTo( DateTime.Now ) >= 1 ) {
+
+                                sqlSelect = "INSERT INTO rc_UserGroups(groupID, userName) VALUES (@0, @1)";
+                                db.Execute( sqlSelect, reqData.groupID, un );
+
+
+                            }
+
+                            sqlSelect = "DELETE FROM rc_Requests WHERE id=@0";
+                            db.Execute( sqlSelect, reqID );
+                            
+                            
+                        }
+
+
+                    }
+
                     Session["userName"] = un;
                     Response.Redirect( "~/groups" );
 
@@ -52,7 +84,7 @@
 
             }
         }
-        
+
 
     }
 }
@@ -70,7 +102,7 @@
     <link type="text/css" rel="Stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/black-tie/jquery-ui.css" />
     <link href="~/rcLayouts/default/css/loginStyle.css" rel="stylesheet" />
 </head>
-<body >
+<body>
     <form method="post" action="">
 
 
@@ -88,7 +120,7 @@
                     <p>@Html.ValidationMessage( "uPwd" )</p>
                 </li>
                 <li>
-                    <label for="uPwdr">Password:</label>
+                    <label for="uPwdr">Repeat Password:</label>
                     <input type="password" name="uPwdr" @Validation.For( "uPwdr" ) id="uPwdr" value="" />
                     <p>@Html.ValidationMessage( "uPwdr" )</p>
                     <p>@Html.Raw( passwordMessage )</p>

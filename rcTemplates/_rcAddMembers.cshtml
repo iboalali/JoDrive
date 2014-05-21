@@ -5,14 +5,74 @@
         Response.Redirect( "~/?ReturnURL=" + pageName );
     }
 
+    int groupID = int.Parse( Request["id"] );
+
     Validation.Add( "email", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
 
-    if(IsPost){
+    var userMail = Request["email"];
+
+
+    if ( IsPost ) {
         var em = Request["email"];
         var db = Database.Open( "GP" );
-        var sqlSelect = "SELECT rcUser FROM rcLogin WHERE email=@0";
-        var data = db.QuerySingle(sqlSelect, em);
+        var sqlSelect = "SELECT rcUser FROM rc_Login WHERE email=@0";
+        var data = db.QuerySingle( sqlSelect, em );
 
+        if ( data != null ) {
+            sqlSelect = "INSERT INTO rc_UserGroups(groupID, userName) VALUES (@0, @1)";
+            db.Execute( sqlSelect, groupID, data.rcUser );
+
+        } else {
+            // Initialize WebMail helper
+            WebMail.SmtpServer = /*"smtp-mail.outlook.com";*/ "smtp.live.com";
+            WebMail.SmtpPort = 587; //25;
+            WebMail.EnableSsl = true;
+            WebMail.UserName = "ibo-alalali@hotmail.de";
+            WebMail.Password = "heiderhofring16a";
+            WebMail.From = "ibo-alalai@hotmail.de";
+
+            sqlSelect = "SELECT * FROM rc_Requests";
+            var reqData = db.Query( sqlSelect );
+
+            int requestID;
+            Random random = new Random();
+
+            while ( true ) {
+                requestID = random.Next();
+
+                foreach ( var item in reqData ) {
+                    if ( item.id == requestID ) {
+                        continue;
+                    }
+                }
+
+                break;
+            }
+
+            sqlSelect = "INSERT INTO rc_Requests(id, groupID, date) VALUES(@0, @1, @2)";
+            db.Execute( sqlSelect, requestID, groupID, DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() );
+
+
+            sqlSelect = "SELECT * FROM rc_groups WHERE groupID=@0";
+            var groupData = db.QuerySingle( sqlSelect, groupID );
+            var link = "http://localhost:12633/signup?reqID=" + requestID;
+
+            // Send email
+            WebMail.Send( to: userMail,
+            subject: "Come and work on a project on JoDrive",
+            body: groupData.owner + " asks you to join his group to work on his project with him\n"
+            + "Project Name: " + groupData.groupName + "\n"
+            + "Project Description: " + groupData.description + "\n"
+            + "Date Created: " + groupData.date + "\n"
+            + "\n\n"
+            + "click on this link to sign up for a free JoDrive account and start working" + "\n"
+            + "\n\t" + "<a href=\"" + link + "\">" + link + "</a> \n"
+            + "\nThis invitation request will expire after 1 month" + "\n\n\n\n\n\nJoDrive" );
+
+
+
+
+        }
 
 
 
@@ -24,24 +84,24 @@
 <!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Add Members</title>
-    </head>
-    <body>
+<head>
+    <meta charset="utf-8" />
+    <title>Add Members</title>
+</head>
+<body>
 
-        <fieldset>
+    <fieldset>
         <form action="" method="post">
-        <p>
-            <label for="email">Email</label><br>
-            <input type="text" name="email" @Validation.For( "email" ) id="email"> @Html.ValidationMessage( "email" )
-        </p>
+            <p>
+                <label for="email">Email</label><br>
+                <input type="text" name="email" @Validation.For( "email" ) id="email"> @Html.ValidationMessage( "email" )
+            </p>
 
-        <p>
-            <input type="submit" name="btn" value=" Create ">
-        </p>
-    </form>
+            <p>
+                <input type="submit" name="btn" value=" Add ">
+            </p>
+        </form>
 
-            </fieldset>
-    </body>
+    </fieldset>
+</body>
 </html>
