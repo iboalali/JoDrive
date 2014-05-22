@@ -12,6 +12,7 @@
     Validation.RequireField( "ulName", "Required field" );
     Validation.RequireField( "uPwd", "Required field" );
     Validation.RequireField( "uPwdr", "Required field" );
+    Validation.Add( "uPwd", Validator.Regex( @"^(?=.*\d)(?=.*[a-zA-Z]).{6,50}$", "Passowrd must include at least one capital, small, and digit character, and length at least 6" ) );
 
     if ( IsPost ) {
         var fn = Request["ufName"];
@@ -88,7 +89,7 @@
                 try {
                     WebMail.Send( em, "Confirmation for a JoDrive Account", "<h1>Confirmation Email</h1>"
                     + "<p>click this link to confirm you email</p>"
-                    + "<p><a href=\"" + pageName + "/?confID=" + confID + "\">" + pageName + "/?confID=" + confID + "</a></p>" );
+                    + "<p><a href=\"" + pageName + "/emailconfirmed?confID=" + confID + "\">" + pageName + "/emailconfirmed?confID=" + confID + "</a></p>" );
 
                     
                 } catch {
@@ -146,35 +147,41 @@
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.js"></script>
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.js"></script>
+    <script>
+        function ClearInput(box) {
+            document.getElementById(box).value = "";
+
+        }
+    </script>
     <link type="text/css" rel="Stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/black-tie/jquery-ui.css" />
     <link href="~/rcLayouts/default/css/loginStyle.css" rel="stylesheet" />
 </head>
 <body>
-    <form method="post" action="">
+    <form method="post" action="" autocomplete="off">
 
 
         <fieldset style="background-color:white; width:312px; font-size:10px">
             <ol>
                 <li>
                     <label for="ufName">First Name:</label>
-                    <input type="text" name="ufName" @Validation.For( "ufName" ) id="ufName" value="" />
+                    <input type="text" name="ufName" @Validation.For( "ufName" ) id="ufName" onload='ClearInput("ufName");' value="" />
                     <p>@Html.ValidationMessage( "ufName" )</p>
                     <p> @Html.Raw( userNameMessage )</p>
                 </li>
                 <li>
                     <label for="ulName">Last Name:</label>
-                    <input type="text" name="ulName" @Validation.For( "ulName" ) id="ulName" value="" />
+                    <input type="text" name="ulName" @Validation.For( "ulName" ) id="ulName" onload='ClearInput("ulName");' value="" />
                     <p>@Html.ValidationMessage( "ulName" )</p>
                     <p> @Html.Raw( userNameMessage )</p>
                 </li>
                 <li>
                     <label for="uPwd">Password:</label>
-                    <input type="password" name="uPwd" @Validation.For( "uPwd" ) id="uPwd" value="" />
+                    <input type="password" name="uPwd" @Validation.For( "uPwd" ) id="uPwd" onload='ClearInput("uPwd");' value="" />
                     <p>@Html.ValidationMessage( "uPwd" )</p>
                 </li>
                 <li>
                     <label for="uPwdr">Repeat Password:</label>
-                    <input type="password" name="uPwdr" @Validation.For( "uPwdr" ) id="uPwdr" value="" />
+                    <input type="password" name="uPwdr" @Validation.For( "uPwdr" ) id="uPwdr" onload='ClearInput("uPwdr");' value="" />
                     <p>@Html.ValidationMessage( "uPwdr" )</p>
                     <p>@Html.Raw( passwordMessage )</p>
                 </li>

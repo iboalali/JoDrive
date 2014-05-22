@@ -28,7 +28,7 @@
             <li><a href='~/renamefiles?id=@groupId'><span>Remane Files</span></a></li>
             <li><a href='~/viewmembers?id=@groupId'><span>View Members</span></a></li>
             <li><a href='~/removegroup?id=@groupId'><span>Remane Group</span></a></li>
-            <li class='last'><a href='~/leavegroup?id=@groupId'> @if(data.owner == (string)Session["userName"]){ <span>Delete Group</span> } else { <span>Leave Group</span> } </a></li>
+            <li class='last'><a href='~/leavegroup?id=@groupId'> @if ( data.ownerID == ( int ) Session["userID"] ) { <span>Delete Group</span> } else { <span>Leave Group</span> } </a></li>
         </ul>
     </div>
 </body>

@@ -1,6 +1,6 @@
 @{
 
-    if ( Session["userName"] != null ) {
+    if ( Session["userID"] != null ) {
         Response.Redirect( "~/home" );
 
     }
@@ -28,6 +28,7 @@
             
             
             Session["userID"] = data.userID;
+            Session["Name"] = data.firstName + " " + data.lastName;
             //sqlSelect = "SELECT userName FROM rc_SessionInfo";
             //data = db.QuerySingle( sqlSelect );
             //
@@ -73,10 +74,15 @@
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.js"></script>
     <link type="text/css" rel="Stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/black-tie/jquery-ui.css" />
     <link href="~/rcLayouts/default/css/loginStyle.css" rel="stylesheet" />
+    <script>
+        function ClearInput(box) {
+            document.getElementById(box).value = "";
 
+        }
+    </script>
 </head>
 <body>
-    <form method="post" action="">
+    <form method="post" action="" autocomplete="off">
         <fieldset style="background-color: white; width: 312px; font-size: 10px">
             <!--<legend>Login</legend>-->
             <ol>
@@ -87,7 +93,7 @@
                 </li>
                 <li>
                     <label for="Pwd">Password:</label>
-                    <input type="password" name="Pwd" @Validation.For( "Pwd" ) id="Pwd" value="" />
+                    <input type="password" name="Pwd" @Validation.For( "Pwd" ) id="Pwd" value="" onload='ClearInput("email");' />
                     <p>@Html.ValidationMessage( "Pwd" )</p>
                 </li>
                 <li>

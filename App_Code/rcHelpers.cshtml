@@ -11,7 +11,7 @@
 
 
     <ul class="@className" id="@id">
-        <li><a href=""> @Session["userName"] </a></li>
+        <li><a href=""> @Session["Name"] </a></li>
 
         @foreach ( var row in data ) {
             string URL = row.smUrl;
@@ -55,9 +55,9 @@
 
 @helper printGroups () {
     var db = Database.Open( "GP" );
-    var sqlSelect = "Select * from rc_groups where owner=@0";
-    var data = db.Query( sqlSelect, ( string ) Session["userName"] );
-    string dede = ( string ) Session["userName"];
+    var sqlSelect = "Select * from rc_groups where userID=@0";
+    var data = db.Query( sqlSelect, (int)Session["userID"] );
+    int dede = ( int ) Session["userID"];
 
     if ( data != null ) {
         foreach ( var item in data ) {

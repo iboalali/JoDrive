@@ -1,5 +1,5 @@
 ﻿@{
-    if ( Session["userName"] == null ) {
+    if ( Session["userID"] == null ) {
         var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
         Response.Redirect( "~/?ReturnURL=" + pageName );

@@ -1,5 +1,5 @@
 ﻿@{
-    if ( Session["userName"] == null ) {
+    if ( Session["userID"] == null ) {
         var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
         Response.Redirect( "~/?ReturnURL=" + pageName );
@@ -15,7 +15,7 @@
     if ( IsPost ) {
         var em = Request["email"];
         var db = Database.Open( "GP" );
-        var sqlSelect = "SELECT rcUser FROM rc_Login WHERE email=@0";
+        var sqlSelect = "SELECT rcUser FROM rc_UserLogin WHERE email=@0";
         var data = db.QuerySingle( sqlSelect, em );
 
         if ( data != null ) {

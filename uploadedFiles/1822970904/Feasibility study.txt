@@ -1,0 +1,42 @@
+Feasibility study:
+
+The domain name is available for $15 at https://www.godaddy.com
+The host for the website and the storage, we chose Amazon S3.
+
+Amazon S3:
+Amazon won us over because of the most good pricing and best Reliability with up to 99.999999999% durability and with 99.99% availability. It's secure, fast and  easily scalable with a few clicks, backed-up and archived for a disaster recovery. With all this, it's simple to use.[1]
+There is even a free usage tier for testing with 5GB standard storage 20,000 Get Requests, 2,000 Put Requests, and 15GB of data transfer each month for one year, with a lot other benefits.[2]
+
+
+Storage Pricing: [3]
+						Standard Storage	Reduced Redundancy Storage		Glacier Storage
+First 1 TB   / month	$0.0300 / GB		$0.0240 / GB					$0.0100 / GB
+Next 49 TB   / month	$0.0295 / GB		$0.0236 / GB					$0.0100 / GB
+Next 450 TB  / month	$0.0290 / GB		$0.0232 / GB					$0.0100 / GB
+
+Amazon Glacier is an extremely low-cost storage service data archiving and backup. it is optimized for infrequently data accessing. [4]
+
+Reduced Redundancy Storage (RRS) is for storing non-critical, reproducible data with less redundancy than the standard storage. [5]
+
+Request Pricing: [3]
+
+PUT, COPY, POST, or LIST Requests		$0.005 per 1,000 requests
+Glacier Archive and Restore Requests	$0.05 per 1,000 requests
+Delete Requests							Free
+GET and all other Requests				$0.004 per 10,000 requests
+Glacier Data Restores					Free
+
+
+Data Transfer Pricing: [3]
+
+Data Transfer OUT From Amazon S3 To Internet
+First 1 GB 	/ month								$0.000 / GB
+Up to 10 TB / month								$0.120 / GB
+
+
+[1] https://aws.amazon.com/s3/
+[2] http://aws.amazon.com/free/
+[3] https://aws.amazon.com/s3/pricing/
+[4] https://aws.amazon.com/glacier/
+[5] https://aws.amazon.com/s3/faqs/
+

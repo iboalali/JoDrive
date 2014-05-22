@@ -1,5 +1,5 @@
 @{
-    if ( Session["userName"] == null ) {
+    if ( Session["userID"] == null ) {
         var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
         Response.Redirect( "~/?ReturnURL=" + pageName );
@@ -16,7 +16,7 @@
 
     if ( IsPost ) {
 
-        string userName = ( string ) Session["userName"];
+        int userID = ( int ) Session["userID"];
 
         var sqlSelect = "Select * from rc_groups";
 
@@ -34,19 +34,19 @@
             break;
         }
 
-        sqlSelect = "INSERT INTO rc_groups(groupName, owner, groupID, description, date)"
+        sqlSelect = "INSERT INTO rc_groups(groupName, ownerID, groupID, description, date)"
                   + "VALUES ( @0, @1, @2, @3, @4 )";
         //sqlSelect = "INSERT INTO rc_groups "
         //            + "SELECT groupName, owner, groupID, description"
         //            + "WHERE groupName=@0 and owner=@1 and groupID=@2 and description=@3";
-        db.Execute( sqlSelect, s_groupName, userName, s_groupID, s_groupDescription,
+        db.Execute( sqlSelect, s_groupName, userID, s_groupID, s_groupDescription,
                         DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() );
 
 
-        sqlSelect = "INSERT INTO rc_UserGroups(groupID, userName)"
+        sqlSelect = "INSERT INTO rc_UserGroups(groupID, userID)"
                   + "VALUES ( @0, @1 )";
         //sqlSelect = "INSERT INTO rc_UserGroups where groupID=@0 and userName=@1";
-        db.Execute( sqlSelect, s_groupID, userName );
+        db.Execute( sqlSelect, s_groupID, userID );
 
         var root = Server.MapPath( "/" );
         var foldername =  "uploadedFiles/" + s_groupID.ToString();

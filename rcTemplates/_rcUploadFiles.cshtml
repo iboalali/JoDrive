@@ -1,7 +1,7 @@
 ﻿@using Microsoft.Web.Helpers;
 @{
 
-    if ( Session["userName"] == null ) {
+    if ( Session["userID"] == null ) {
         var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
         Response.Redirect( "~/?ReturnURL=" + pageName );
@@ -37,7 +37,7 @@
 
         sqlSelect = "INSERT INTO rc_Files(fileID, fileName, filePath, groupID, date, currentOwner) VALUES (@0, @1, @2, @3, @4, @5)";
         db.Execute( sqlSelect, fileID, fileName, fileSavePath, groupId,
-                   DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString(), ( string ) Session["userName"] );
+                   DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString(), ( int ) Session["userID"] );
 
     }
 

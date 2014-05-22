@@ -1,13 +1,17 @@
 ﻿@{
-    if ( Session["userName"] == null ) {
+    if ( Session["userID"] == null ) {
         var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
         Response.Redirect( "~/?ReturnURL=" + pageName );
     }
 
     var db = Database.Open( "GP" );
-    var sqlSelect = "Select * From rc_groups Where groupID In (Select groupID From rc_UserGroups where userName=@0)";
-    var data = db.Query( sqlSelect, ( string ) Session["userName"] );
+    var sqlSelect = "Select * From rc_groups Where groupID In (Select groupID From rc_UserGroups where userID=@0)";
+    var data = db.Query( sqlSelect, ( int ) Session["userID"] );
+
+    var name = string.Empty;
+   
+
 }
 
 
@@ -25,7 +29,7 @@
 
 
     @if ( data != null ) {
-        
+
         <div class="table">
             <table>
 
@@ -45,12 +49,19 @@
                         <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
                             <a href="files?id=@item.groupID">@item.groupName</a>
                         </td>
-                        <td> @item.owner</td>
+                        <td>
+                            @{
+                                sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID=@0";
+                                var user_data = db.QuerySingle( sqlSelect, item.ownerID );
+                                name = user_data.firstName + " " + user_data.lastName;
+                            }
+                            @name
+                        </td>
                         <td>@item.date</td>
 
-                        @if ( item.owner == ( string ) Session["userName"] ) {
+                        @if ( item.ownerID == ( int ) Session["userID"] ) {
                             <td><img src="~/rcLayouts/default/images/admin.png" alt="Admin" height="19" width="19"></td>
-                            
+
                         } else {
                             <td></td>
                         }

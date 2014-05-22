@@ -1,7 +1,7 @@
 ﻿@{
 
     int confID = 0;
-    confID = int.Parse( Request["confID"] );
+    int.TryParse( Request["confID"], out confID );
     var message = string.Empty;
 
     if ( confID != 0 ) {
@@ -11,9 +11,21 @@
 
         if ( c_data != null ) {
 
-            sqlSelect = "INSERT INTO rc_UserLogin(userID, pwd, firstName, lastName, email) VALUES(@0, @1, @2, @3, @4)";
-            db.Execute( sqlSelect, c_data.userID, c_data.pwd, c_data.firstName, c_data.lastName, c_data.email );
+            DateTime date = Convert.ToDateTime( c_data.date );
+            date = date.AddDays( 14 );
 
+            if ( date.CompareTo( DateTime.Now ) >= 1 ) {
+
+                sqlSelect = "INSERT INTO rc_UserLogin(userID, pwd, firstName, lastName, email) VALUES(@0, @1, @2, @3, @4)";
+                db.Execute( sqlSelect, c_data.userID, c_data.pwd, c_data.firstName, c_data.lastName, c_data.email );
+
+            } else {
+                message = "confirmation ID is expired";
+            }
+
+            sqlSelect = "DELETE FROM rc_Confirmation WHERE confID=@0";
+            db.Execute( sqlSelect, confID );
+            
         } else {
             message = "something went wrong";
 
@@ -32,9 +44,14 @@
     <title></title>
 </head>
 <body>
+    @if ( message == string.Empty ) {
 
+        <h1>Thank You</h1>
+        <p>We have confirmed your email, please click <a href="~/">here</a> to login</p>
+    } else {
 
-
+        <h1> @Html.Raw( message ) </h1>
+    }
 </body>
 
 

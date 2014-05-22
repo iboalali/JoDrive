@@ -1,11 +1,14 @@
-﻿@{
-    if ( Session["userName"] == null ) {
+﻿@using Microsoft.Web.Helpers;
+@using System.Web.WebPages.Html;
+@{
+    if ( Session["userID"] == null ) {
         var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
         Response.Redirect( "~/?ReturnURL=" + pageName );
 
     }
-    var user = ( string ) Session["userName"];
+    var user = ( int ) Session["userID"];
+    var name = string.Empty;
 
     var groupId = Request["id"];
 
@@ -13,13 +16,13 @@
     var sqlSelect = "Select * From rc_Files Where groupID= @0";
     var data = db.Query( sqlSelect, groupId );
 
-    sqlSelect = "SELECT userName FROM rc_UserGroups WHERE groupID=@0";
+    sqlSelect = "SELECT userID FROM rc_UserGroups WHERE groupID=@0";
     var u_data = db.Query( sqlSelect, groupId );
 
     bool isMember = false;
     foreach ( var item in u_data ) {
-        if ( item.userName.ToString().ToLower() == user.ToLower() ) {
-            isMember = true;
+        if ( item.userID == user ) {
+            isMember = true;    
             break;
         }
     }
@@ -27,9 +30,18 @@
     sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
     var g_data = db.QuerySingle( sqlSelect, groupId );
 
+    sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID=@0";
+    var user_data = db.QuerySingle( sqlSelect, g_data.ownerID );
+    name = user_data.firstName + " " + user_data.lastName;
+    
 
     if ( IsPost ) {
         var fileId = Request.Form["image"];
+        sqlSelect = "SELECT filePath FROM rc_Files WHERE fileID=@0";
+        var download_data = db.QuerySingle( sqlSelect, fileId );
+        FileWebRequest.Create( download_data.filePath );
+        
+        
         //get the download file path
     }
 }
@@ -42,6 +54,23 @@
     <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
     <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
     <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+    <script>
+
+        var downloadURL = function downloadURL(url) {
+            var hiddenIFrameID = 'hiddenDownloader',
+                iframe = document.getElementById(hiddenIFrameID);
+            if (iframe === null) {
+                iframe = document.createElement('iframe');
+                iframe.id = hiddenIFrameID;
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+            }
+            iframe.src = url;
+        };
+
+    </script>
+
+
     <title></title>
 </head>
 <body>
@@ -52,7 +81,7 @@
 
             <p>
                 <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
-                <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.owner.ToString() == user ) { <text>You</text> } else { @g_data.owner }</span>
+                <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
                 <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
             </p>
 
@@ -80,13 +109,16 @@
                                 <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
                                     @item.fileName
                                 </td>
-                                <td> @item.currentOwner </td>
+                                <td> @name </td>
                                 <td> @item.date </td>
                                 <td>
+                                    
                                     <form method="post">
                                         <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" />
                                     </form>
+                                    
 
+                                    
                                 </td>
                             </tr>
                         }
