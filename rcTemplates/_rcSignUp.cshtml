@@ -1,92 +1,139 @@
 ﻿@{
 
-    int reqID = 0;
-    int.TryParse( Request["reqID"], out reqID );
+    //int reqID = 0;
+    //int.TryParse( Request["reqID"], out reqID );
 
     var userNameMessage = string.Empty;
     var passwordMessage = string.Empty;
     var emailMessage = string.Empty;
 
     Validation.Add( "email", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
-    Validation.RequireField( "uName", "Required field" );
+    Validation.RequireField( "ufName", "Required field" );
+    Validation.RequireField( "ulName", "Required field" );
     Validation.RequireField( "uPwd", "Required field" );
     Validation.RequireField( "uPwdr", "Required field" );
 
     if ( IsPost ) {
-        var un = Request["uName"];
+        var fn = Request["ufName"];
+        var ln = Request["ulName"];
         var up = Request["uPwd"];
         var upr = Request["uPwdr"];
         var em = Request["email"];
 
         var db = Database.Open( "GP" );
         var sqlSelect = string.Empty;
-        bool valid = true;
 
-        sqlSelect = "SELECT * from rc_Login where rcUser=@0 and rcPwd=@1";
-        var data = db.QuerySingle( sqlSelect, un, up );
-
-        sqlSelect = "SELECT * from rc_Login WHERE email=@0";
+        sqlSelect = "SELECT * from rc_UserLogin WHERE email=@0";
         var e_data = db.QuerySingle( sqlSelect, em );
 
         if ( e_data != null ) {
             emailMessage = "There is an Account with this email";
-            valid = false;
-        }
 
-        if ( data != null ) {
-            userNameMessage = "User Name already exist";
-            valid = false;
-        }
+        } else {
 
-        if ( valid ) {
+            // check for password matching
             if ( up != upr ) {
                 passwordMessage = "Password doesn't match";
+
             } else {
-                int r = db.Execute( "INSERT INTO rc_Login VALUES (@0, @1, @2)", un, up, em );
-                if ( r == 0 ) {
-                    // Error
-                } else {
 
-                    if ( reqID != 0 ) {
+                
+                sqlSelect = "SELECT * FROM rc_Confirmation";
+                var data = db.Query( sqlSelect );
 
-                        sqlSelect = "SELECT * FROM rc_Requests WHERE id=@0";
-                        var reqData = db.QuerySingle( sqlSelect, reqID );
+                int confID = 0;
+                Random random = new Random();
+                while ( true ) {
+                    confID = random.Next();
 
-                        if ( reqData != null ) {
-                            string[] date = ( ( string ) reqData.date ).Split( new char[] { ' ' },
-                                                                StringSplitOptions.RemoveEmptyEntries );
-
-                            DateTime reqDate = Convert.ToDateTime( date[0] );
-                            reqDate = reqDate.AddMonths( 1 );
-
-                            if ( reqDate.CompareTo( DateTime.Now ) >= 1 ) {
-
-                                sqlSelect = "INSERT INTO rc_UserGroups(groupID, userName) VALUES (@0, @1)";
-                                db.Execute( sqlSelect, reqData.groupID, un );
-
-
-                            }
-
-                            sqlSelect = "DELETE FROM rc_Requests WHERE id=@0";
-                            db.Execute( sqlSelect, reqID );
-                            
-                            
+                    foreach ( var item in data ) {
+                        if ( item.confID == confID ) {
+                            continue;
                         }
-
-
                     }
 
-                    Session["userName"] = un;
-                    Response.Redirect( "~/groups" );
-
+                    break;
                 }
+
+
+                sqlSelect = "SELECT userID FROM rc_UserLogin";
+                data = db.Query( sqlSelect );
+
+                int userID;
+                while ( true ) {
+                    userID = random.Next();
+
+                    foreach ( var item in data ) {
+                        if ( item.userID == userID ) {
+                            continue;
+                        }
+                    }
+
+                    break;
+                }
+
+
+                sqlSelect = "INSERT INTO rc_Confirmation(confID, userID, firstName, lastName, email, pwd, date) VALUES(@0, @1, @2, @3, @4, @5, @6)";
+                db.Execute( sqlSelect, confID, userID, fn, ln, em, up, DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() );
+
+                // Initialize WebMail helper
+                WebMail.SmtpServer = /*"smtp-mail.outlook.com";*/ "smtp.live.com";
+                WebMail.SmtpPort = 587; //25;
+                WebMail.EnableSsl = true;
+                WebMail.UserName = "ibo-alalali@hotmail.de";
+                WebMail.Password = "heiderhofring16a";
+                WebMail.From = "ibo-alalai@hotmail.de";
+                
+                var pageName = Request.Url.ToString().Substring( 0, Request.Url.ToString().LastIndexOf( '/' ) );
+                try {
+                    WebMail.Send( em, "Confirmation for a JoDrive Account", "<h1>Confirmation Email</h1>"
+                    + "<p>click this link to confirm you email</p>"
+                    + "<p><a href=\"" + pageName + "/?confID=" + confID + "\">" + pageName + "/?confID=" + confID + "</a></p>" );
+
+                    
+                } catch {
+                    
+                    
+                }
+                
+                Response.Redirect( "~/emailconfirmation" );
+                
+
+                //if ( reqID != 0 ) {
+                //
+                //    sqlSelect = "SELECT * FROM rc_Requests WHERE id=@0";
+                //    var reqData = db.QuerySingle( sqlSelect, reqID );
+                //
+                //    if ( reqData != null ) {
+                //        string[] date = ( ( string ) reqData.date ).Split( new char[] { ' ' },
+                //                                            StringSplitOptions.RemoveEmptyEntries );
+                //
+                //        DateTime reqDate = Convert.ToDateTime( date[0] );
+                //        reqDate = reqDate.AddMonths( 1 );
+                //
+                //        if ( reqDate.CompareTo( DateTime.Now ) >= 1 ) {
+                //
+                //            sqlSelect = "INSERT INTO rc_UserGroups(groupID, userName) VALUES (@0, @1)";
+                //            db.Execute( sqlSelect, reqData.groupID, un );
+                //
+                //        }
+                //
+                //        sqlSelect = "DELETE FROM rc_Requests WHERE id=@0";
+                //        db.Execute( sqlSelect, reqID );
+                //
+                //    }
+                //
+                //    Session["userName"] = un;
+                //    Response.Redirect( "~/groups" );
+                //
+                //}
 
 
             }
         }
 
 
-    }
+    }//end if(isPost)
 }
 
 <!DOCTYPE html>
@@ -109,9 +156,15 @@
         <fieldset style="background-color:white; width:312px; font-size:10px">
             <ol>
                 <li>
-                    <label for="uName">User Name:</label>
-                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" />
-                    <p>@Html.ValidationMessage( "uName" )</p>
+                    <label for="ufName">First Name:</label>
+                    <input type="text" name="ufName" @Validation.For( "ufName" ) id="ufName" value="" />
+                    <p>@Html.ValidationMessage( "ufName" )</p>
+                    <p> @Html.Raw( userNameMessage )</p>
+                </li>
+                <li>
+                    <label for="ulName">Last Name:</label>
+                    <input type="text" name="ulName" @Validation.For( "ulName" ) id="ulName" value="" />
+                    <p>@Html.ValidationMessage( "ulName" )</p>
                     <p> @Html.Raw( userNameMessage )</p>
                 </li>
                 <li>

@@ -1,0 +1,44 @@
+﻿@{
+
+    int confID = 0;
+    confID = int.Parse( Request["confID"] );
+    var message = string.Empty;
+
+    if ( confID != 0 ) {
+        var db = Database.Open( "GP" );
+        var sqlSelect = "SELECT * FROM rc_Confirmation WHERE confID=@0";
+        var c_data = db.QuerySingle( sqlSelect, confID );
+
+        if ( c_data != null ) {
+
+            sqlSelect = "INSERT INTO rc_UserLogin(userID, pwd, firstName, lastName, email) VALUES(@0, @1, @2, @3, @4)";
+            db.Execute( sqlSelect, c_data.userID, c_data.pwd, c_data.firstName, c_data.lastName, c_data.email );
+
+        } else {
+            message = "something went wrong";
+
+        }
+    } else {
+        Response.Redirect( "~/" );
+
+    }
+
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+
+
+</body>
+
+
+
+
+
+</html>

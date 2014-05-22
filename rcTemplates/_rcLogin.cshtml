@@ -5,71 +5,58 @@
 
     }
 
-    //super simple login page
-    //just to provide basic protection for control panel
-    Validation.RequireField( "uName", "Required field" );
-    Validation.RequireField( "uPwd", "Required field" );
-    //ModelState.AddModelError( "LogInError", "Invalid username or password" );
-    //ModelState.AddError("LogInError", "Invalid username or password");
-    //Validation.AddFormError( "Invalid username or password" );
+    Validation.Add( "email", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
+    Validation.RequireField( "Pwd", "Required field" );
     string message = string.Empty;
 
-    Validation.RequireField( "suName", "Required field" );
-    Validation.RequireField( "suPwd", "Required field" );
-    Validation.RequireField( "semail", "Required field" );
 
 
-    
     string userNameMessage = string.Empty;
     string passwordMessage = string.Empty;
-    var db = Database.Open( "GP" );
     var sqlSelect = string.Empty;
     if ( IsPost ) {
+        var db = Database.Open( "GP" );
+        var em = Request["email"];
+        var up = Request["Pwd"];       
+        
 
-        var un = Request["uName"];
-        var up = Request["uPwd"];
-
-
-        sqlSelect = "Select * from rc_Login where rcUser=@0 and rcPwd=@1";
-        var data = db.QuerySingle( sqlSelect, un, up );
+        sqlSelect = "SELECT * FROM rc_UserLogin WHERE email=@0 and pwd=@1";
+        var data = db.QuerySingle( sqlSelect, em, up );
 
         if ( data != null ) {
 
-            if ( un == "admin" ) {
-                message = "Invalid username or password";
+            
+            
+            Session["userID"] = data.userID;
+            //sqlSelect = "SELECT userName FROM rc_SessionInfo";
+            //data = db.QuerySingle( sqlSelect );
+            //
+            //if ( data != null ) {
+            //
+            //    if ( Request["ReturnURL"] != null && (string) Session["userName"] == data.userName ) {
+            //        Response.Redirect( "~/" + Request["ReturnURL"] );
+            //
+            //    } else {
+            //        sqlSelect = "DELETE FROM rc_SessionInfo WHERE userName=@0";
+            //        db.Execute( sqlSelect, data.userName );
+            //
+            //        sqlSelect = "INSERT INTO rc_SessionInfo(userName) VALUES(@0)";
+            //        db.Execute( sqlSelect, un );
+            //        Response.Redirect( "~/home" );
+            //
+            //    }
+            //} else {
+            //
+            //sqlSelect = "INSERT INTO rc_SessionInfo(userName) VALUES(@0)";
+            //db.Execute( sqlSelect, un );
 
-            } else {
-                Session["userName"] = un;
-                sqlSelect = "SELECT userName FROM rc_SessionInfo";
-                data = db.QuerySingle( sqlSelect );
+            Response.Redirect( "~/home" );
 
-                if ( data != null ) {
+            //}
 
-                    if ( Request["ReturnURL"] != null && (string) Session["userName"] == data.userName ) {
-                        Response.Redirect( "~/" + Request["ReturnURL"] );
-
-                    } else {
-                        sqlSelect = "DELETE FROM rc_SessionInfo WHERE userName=@0";
-                        db.Execute( sqlSelect, data.userName );
-                        
-                        sqlSelect = "INSERT INTO rc_SessionInfo(userName) VALUES(@0)";
-                        db.Execute( sqlSelect, un );
-                        Response.Redirect( "~/home" );
-                        
-                    }
-                } else {
-                    
-                    sqlSelect = "INSERT INTO rc_SessionInfo(userName) VALUES(@0)";
-                    db.Execute( sqlSelect, un );
-                    
-                    Response.Redirect( "~/home" );
-
-                }
-
-            }
 
         } else {
-            message = "Invalid username or password";
+            message = "Invalid email or password";
 
         }
 
@@ -94,14 +81,14 @@
             <!--<legend>Login</legend>-->
             <ol>
                 <li>
-                    <label for="uName">User Name:</label>
-                    <input type="text" name="uName" @Validation.For( "uName" ) id="uName" value="" />
-                    <p>@Html.ValidationMessage( "uName" )</p>
+                    <label for="email">Email:</label>
+                    <span>@Html.TextBox( "email", Request["email"] )</span>
+                    <p>@Html.ValidationMessage( "email" )</p>
                 </li>
                 <li>
-                    <label for="uPwd">Password:</label>
-                    <input type="password" name="uPwd" @Validation.For( "uPwd" ) id="uPwd" value="" />
-                    <p>@Html.ValidationMessage( "uPwd" )</p>
+                    <label for="Pwd">Password:</label>
+                    <input type="password" name="Pwd" @Validation.For( "Pwd" ) id="Pwd" value="" />
+                    <p>@Html.ValidationMessage( "Pwd" )</p>
                 </li>
                 <li>
                     <p style="color: #f00; font-size: 12px"> @Html.Raw( message )</p>
