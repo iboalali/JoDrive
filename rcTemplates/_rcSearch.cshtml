@@ -1,0 +1,170 @@
+﻿@{
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+    }
+
+    var db = Database.Open("GP");
+
+    int groupID = int.Parse( Request["id"] );
+    var sql = "SELECT * FROM rc_UserGroups WHERE groupID = @0";
+    var returned = db.Query(sql, groupID);
+
+    List<int> usersInGroup = new List<int>();
+
+    foreach(var item in returned)
+    {
+        usersInGroup.Add(item.userID);
+    }
+
+    bool isResultFound = false;
+    bool hasRunSearch = false;
+    string[] results = null;
+
+    if(IsPost)
+    {
+        switch(Request.Form["search"]){
+        case "Search":
+        hasRunSearch = true;
+        var searchInfo = Request["searchString"];
+        var sqlSelect = "SELECT * FROM rc_UserLogin WHERE firstName = @0 OR lastName = @0 OR email = @0";
+        var result = db.Query(sqlSelect, searchInfo);
+        if(result != null)
+        {
+            results = new string[result.Count() * 4]; 
+            isResultFound = true;
+
+            int counter = 0;
+
+            foreach(var item in result)
+            {
+                results[counter++] = item.firstName;
+                results[counter++] = item.lastName;
+                results[counter++] = item.email;
+                results[counter++] = item.userID.ToString();
+            }
+        }
+        break;
+        
+        default:
+            //A user is found and the add to group button is clicked
+            int user = int.Parse(Request.Form["btn"]);
+
+            WebMail.SmtpServer = /*"smtp-mail.outlook.com";*/ "smtp.live.com";
+            WebMail.SmtpPort = 587; //25;
+            WebMail.EnableSsl = true;
+            WebMail.UserName = "ibo-alalali@hotmail.de";
+            WebMail.Password = "heiderhofring16a";
+            WebMail.From = "ibo-alalai@hotmail.de";
+
+            sqlSelect = "SELECT * FROM rc_Requests";
+            var reqData = db.Query( sqlSelect );
+
+            int requestID;
+            Random random = new Random();
+
+            while ( true ) {
+                requestID = random.Next();
+
+                foreach ( var item in reqData ) {
+                    if ( item.id == requestID ) {
+                        continue;
+                    }
+                }
+
+                break;
+            }
+
+            sqlSelect = "INSERT INTO rc_Requests(id, groupID, date, userID) VALUES(@0, @1, @2, @3)";
+            db.Execute( sqlSelect, requestID, groupID, DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString(), user );
+
+
+            sqlSelect = "SELECT * FROM rc_groups WHERE groupID=@0";
+            var groupData = db.QuerySingle( sqlSelect, groupID );
+
+            sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID = @0";
+            var userData = db.QuerySingle(sqlSelect, groupData.ownerID);    //userData is actually data of the group owner
+            
+            sqlSelect = "SELECT email FROM rc_UserLogin WHERE userID = @0";
+            var recepientData = db.QuerySingle(sqlSelect, user); 
+
+            var pageName = Request.Url.ToString().Substring(0, Request.Url.ToString().LastIndexOf('/'));
+
+            var link = pageName + "/groupConfirm?reqID=" + requestID;
+
+            // Send email
+            WebMail.Send( to: recepientData.email,
+            subject: "Invitation to Join a group on JoDrive",
+            body: 
+            "<h1>JoDrive</h1>" +
+            "<p>" + userData.firstName + " " + userData.lastName 
+            + " has invited you to join a group on JoDrive.</p>" 
+            +"<p>Group you are invited to join: " + groupData.groupName + "</br>"
+            + "Description: " + groupData.description + "</p>"
+            +"<p>Click the following link to confirm joining the group: </br>"
+            +"<a href=\""  + link + "\">" + link + "</a></p>");
+        
+
+        break;
+        }
+
+        
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+    </head>
+    <body>
+        <p>You can search for users with their first name, last name, or email address</p>
+        <form method="post"><label for="searchString">Search</label>
+        <input type="text" name="searchString">
+        <input type="submit" name="search" value="Search"></form>
+        </br>
+
+        @if(isResultFound && (results.Count() != 0)){
+            <div class="table">
+            <table>
+
+                <colgroup>
+                    <col span="1" style="width: 60%;">
+                    <col span="1" style="width: 35%;">
+                    <col span="1" style="width: 5%;">
+                </colgroup>
+                <tr>
+                    <th style="border-left: none"> NAME </th>
+                    <th> EMAIL </th>
+                    <th>  </th>
+                </tr>
+                @for(int i=0;i < results.Count() ; i+=4){
+                    <tr>
+                        <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
+                            @results[i] @Html.Raw(" ") @results[i+1]
+                        </td>
+                        <td>
+                           @results[i+2]
+                        </td>
+                        <td>@if(!usersInGroup.Contains(int.Parse(results[i+3]))){<form method="post">
+                                <input type="image" src="~/rcLayouts/default/images/addUser.png" title="Add User" name="btn" value="@results[i+3]" width="18" height="18" onclick="return confirm('A confirmation email will be sent to @results[i] @results[i+1], Are you sure you want to add the user to the group?')"/>
+                        </form>}</td>
+                    </tr>
+                            }
+            </table>
+        </div>
+                }
+        @if(hasRunSearch && results.Count() == 0){
+            <p>Your search returned 0 results!<br>
+            Make sure you entered correct search data, or <a href="~/invite?id=@groupID">invite a new user to the website</a>.
+            </p>
+
+        }
+
+    </body>
+</html>

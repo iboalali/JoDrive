@@ -1,0 +1,91 @@
+﻿@{
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+    }
+
+    int groupID = int.Parse( Request["id"] );
+
+    var db = Database.Open("GP");
+    var sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID IN (SELECT userID FROM rc_UserGroups WHERE groupID = @0)";
+    var data = db.Query(sqlSelect, groupID);
+
+    sqlSelect = "SELECT ownerID FROM rc_groups WHERE groupID = @0";
+    var groupAdmin = db.QuerySingle(sqlSelect, groupID);
+
+    if(IsPost)
+    {
+        var userID = Request.Form["image"];
+        if(!userID.IsEmpty())
+        {
+            var sqldelete = "Delete from rc_UserGroups WHERE userID=@0";
+            db.Execute(sqldelete, userID);
+            Response.Redirect(Request.RawUrl);
+
+        }
+
+    }
+
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <title></title>
+    </head>
+    <body>
+         @if ( data != null ) {
+
+        <div class="table">
+            <table>
+
+                <colgroup>
+                    <col span="1" style="width: 60%;">
+                    <col span="1" style="width: 35%;">
+                    <col span="1" style="width: 5%;">
+                </colgroup>
+                <tr>
+                    <th style="border-left: none"> NAME </th>
+                    <th> EMAIL</th>
+                    <th>  </th>
+                </tr>
+                @foreach ( var item in data ) {
+                    <tr>
+                        <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
+                           @item.firstName @Html.Raw(" ") @item.lastName
+                        </td>
+                        <td>
+                           @item.email                  
+                        </td>
+                        
+                        @{
+                            sqlSelect = "SELECT * FROM rc_groups WHERE groupID = @0 AND ownerID = @1";
+                            var result = db.QuerySingle(sqlSelect, groupID, item.userID);
+
+                            int UserID = 0;
+                        }
+                        <td><form method="post">
+                            @if(groupAdmin.ownerID == (int)Session["userID"]){
+                            if(result == null){
+                                <input type="image" src="~/rcLayouts/default/images/delete.png" name="image" title="Remove User"value="@item.userID" width="18" height="18" onclick="return confirm('Are you sure you want to remove this user?')"/>
+                           } } else{
+                                 if(item.userID != (int)Session["userID"]){
+                                <input type="image" src="~/rcLayouts/default/images/sendMsg.png" name="image" title="Message User"value="@item.userID" width="18" height="18" onclick="return confirm('Are you sure you want to message this user?')"/> 
+                                }
+                             }                                                                                                                                                                                                
+                        </form></td>
+
+                    </tr>
+                }
+            </table>
+        </div>
+    }
+
+    </body>
+</html>

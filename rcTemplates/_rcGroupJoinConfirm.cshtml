@@ -1,0 +1,44 @@
+﻿@{
+ int reqID = 0;
+    int.TryParse( Request["reqID"], out reqID );
+    var message = string.Empty;
+
+    if ( reqID != 0 ) {
+        var db = Database.Open( "GP" );
+        var sqlSelect = "SELECT * FROM rc_Requests WHERE id=@0";
+        var c_data = db.QuerySingle( sqlSelect, reqID );
+
+        if ( c_data != null ) {
+
+            sqlSelect = "INSERT INTO rc_UserGroups(groupID, userID) VALUES(@0, @1)";
+            db.Execute( sqlSelect, c_data.groupID, c_data.userID );
+
+            sqlSelect = "DELETE FROM rc_Requests WHERE id=@0";
+            db.Execute( sqlSelect, reqID );
+            
+        
+            message = "You have joined the group!";
+
+        
+            Response.Redirect( "~/groups" );
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    
+
+        <h1> @Html.Raw( message ) </h1>
+    
+</body>
+
+
+
+
+
+</html>
