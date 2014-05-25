@@ -22,7 +22,7 @@
     bool isMember = false;
     foreach ( var item in u_data ) {
         if ( item.userID == user ) {
-            isMember = true;    
+            isMember = true;
             break;
         }
     }
@@ -33,15 +33,15 @@
     sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID=@0";
     var user_data = db.QuerySingle( sqlSelect, g_data.ownerID );
     name = user_data.firstName + " " + user_data.lastName;
-    
+
 
     if ( IsPost ) {
         var fileId = Request.Form["image"];
         sqlSelect = "SELECT filePath FROM rc_Files WHERE fileID=@0";
         var download_data = db.QuerySingle( sqlSelect, fileId );
         FileWebRequest.Create( download_data.filePath );
-        
-        
+
+
         //get the download file path
     }
 }
@@ -107,15 +107,14 @@
                         @foreach ( var item in data ) {
                             <tr>
                                 @{
-                            string fileName = string.Empty;
-                           if(item.fileName.Length >= 47)
-                           {
-                               fileName = item.fileName.Substring(0, 40) + "...";
+                                    string fileName = string.Empty;
+                                    if ( item.fileName.Length >= 35 ) {
+                                        fileName = item.fileName.Substring( 0, 35 ) + "...";
 
-                           }else{
-                               fileName = item.fileName;
+                                    } else {
+                                        fileName = item.fileName;
 
-                           }
+                                    }
                                 }
                                 <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
                                     @fileName
@@ -123,13 +122,13 @@
                                 <td> @name </td>
                                 <td> @item.date </td>
                                 <td>
-                                    
+
                                     <form method="post">
                                         <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" />
                                     </form>
-                                    
 
-                                    
+
+
                                 </td>
                             </tr>
                         }
@@ -137,8 +136,8 @@
                 </div>
             } else {
                 <p style="padding-left: 1em">You don't have any files, click <a href='~/uploadfiles?id=@groupId'>here</a> to start uploading</p>
-                
-                
+
+
 
             }
         } else {

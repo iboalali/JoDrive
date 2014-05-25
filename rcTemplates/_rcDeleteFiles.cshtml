@@ -1,66 +1,92 @@
 ﻿@{
-    var groupID = Request["groupId"];
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+
+    }
+
+    var groupID = Request["id"];
 
     var db = Database.Open( "GP" );
     var sqlSelect = "Select * From rc_Files Where groupID = @0";
-    var data = db.Query(sqlSelect, groupID);
+    var data = db.Query( sqlSelect, groupID );
 
-    if (IsPost)
-    {
+    if ( IsPost ) {
         var fileId = Request.Form["image"];
-         if (!fileId.IsEmpty())
-         {
+        if ( !fileId.IsEmpty() ) {
+            sqlSelect = "SELECT * FROM rc_Files WHERE fileID = @0";
+            var file_data = db.QuerySingle( sqlSelect, fileId );
+            
+            
+            
             var sqldelete = "Delete From rc_Files Where fileID= @0";
-            db.Execute(sqldelete, (string) fileId);
-            Response.Redirect(Request.RawUrl);
-         }
+            db.Execute( sqldelete, ( string ) fileId );
+            File.Delete( file_data.filePath );
+            Response.Redirect( Request.RawUrl );
+        }
     }
 }
 
 <!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
-         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
-         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
-        <title></title>
-    </head>
-    <body>
-        
-        @if ( data != null ) 
-       {
-           <div class="table" >
-           <table>
+<head>
+    <meta charset="utf-8" />
+    <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
 
-               <colgroup>
-                 <col span="1" style="width: 45%;">
-                 <col span="1" style="width: 30%;">
-                 <col span="1" style="width: 25%;">
-                 <col span="1" style="width: 5%;">
-              </colgroup>
-                   <tr>
-                       <th style="border-left: none"> FILE NAME </th>
-                       <th> MODIFIED </th>
-                       <th> </th>
-                       <th style="border-left: none"> </th>
-                   </tr>
-           @foreach ( var item in data ) 
-           {
-                   <tr>
-                       <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">@item.fileName</td>
-                       <td> blah </td>
-                       <td> hon </td>
-                       <td>
-                           <form method="post">
-                               <input type="image" src="~/rcLayouts/default/images/delete.png" name="image" value="@item.fileID" width="18" height="18" onclick="return confirm('Are you sure you want to delete?')"/>
-                           </form>
-                       </td>
-                   </tr>  
-           }
+    @if ( data != null ) {
+        <div class="table">
+            <table>
+
+                <colgroup>
+                    <col span="1" style="width: 45%;">
+                    <col span="1" style="width: 30%;">
+                    <col span="1" style="width: 25%;">
+                    <col span="1" style="width: 5%;">
+                </colgroup>
+                <tr>
+                    <th style="border-left: none"> FILE NAME </th>
+                    <th> CURRENT OWNER </th>
+                    <th> MODIFIED </th>
+                    <th style="border-left: none"> </th>
+                </tr>
+                @foreach ( var item in data ) {
+                    <tr>
+                        @{
+                            string fileName = string.Empty;
+                            if ( item.fileName.Length >= 35 ) {
+                                fileName = item.fileName.Substring( 0, 35 ) + "...";
+
+                            } else {
+                                fileName = item.fileName;
+
+                            }
+                        }
+
+                        <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">@fileName</td>
+                        @{
+                            sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID = @0";
+                            var user_data = db.QuerySingle( sqlSelect, item.currentOwner );
+                            string currentOwner = user_data.firstName + " " + user_data.lastName;
+                            
+                        }                        
+                        <td> @currentOwner </td>
+                        <td> @item.date </td>
+                        <td>
+                            <form method="post">
+                                <input type="image" src="~/rcLayouts/default/images/delete.png" name="image" value="@item.fileID" width="18" height="18" onclick="return confirm('Are you sure you want to delete this file?')" />
+                            </form>
+                        </td>
+                    </tr>
+                }
             </table>
-          </div> 
-        }      
-    </body>
+        </div>
+    }
+</body>
 </html>
