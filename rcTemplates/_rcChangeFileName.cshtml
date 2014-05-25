@@ -1,0 +1,55 @@
+﻿@{
+    var fileId = Request.Params["fileId"];
+    var groupId = Request.Params["groupId"];
+    var errMSG = "";
+    var newName = "";
+
+    var db = Database.Open("GP");
+    var sqlSelect = "Select * From rc_Files Where fileID=@0";
+    var data = db.Query(sqlSelect, fileId);
+
+    Validation.RequireField("newName","Enter new file name");
+
+    newName = Request["newName"];
+
+    if (IsPost && Validation.IsValid()){
+        var sqlUp = "Update rc_Files set fileName=@0 where fileID=@1";
+        try
+        {
+            db.Execute(sqlUp, newName, fileId);
+            errMSG = "<b>Thank You - changes saved !</b>";
+            Response.Redirect("files?groupId=" + groupId);
+        }
+        catch (Exception ex)
+        {
+            errMSG = ex.Message.ToString();
+        }
+    }
+}
+
+
+<form method="post" action="">
+@if (data != null)
+{
+foreach ( var item in data ) 
+ {
+     <fieldset>
+        <ol>
+            <li>
+                <label for="oldName">Current file name:</label>
+                <p>@item.fileName</p>
+                </li>
+                <li>
+                <label for="newName">New file name:</label>
+                <input type="text" name="newName" id="newName" value="@newName" @Validation.For("newName") />
+                    @Html.ValidationMessage("newName")
+            </li>
+        </ol>
+          <p class="form-actions">
+            <input type="submit" value="Change" title="Change" />
+        </p>
+    </fieldset>
+}
+}
+</form>
+        

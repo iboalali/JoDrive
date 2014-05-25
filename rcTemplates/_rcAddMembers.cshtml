@@ -50,7 +50,7 @@
             }
 
             sqlSelect = "INSERT INTO rc_Requests(id, groupID, date) VALUES(@0, @1, @2)";
-            db.Execute( sqlSelect, requestID, groupID, DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() );
+            db.Execute( sqlSelect, requestID, groupID, String.Format(System.Globalization.DateTimeFormatInfo.InvariantInfo, "{0:G}", DateTime.Now ) );
 
 
             sqlSelect = "SELECT * FROM rc_groups WHERE groupID=@0";

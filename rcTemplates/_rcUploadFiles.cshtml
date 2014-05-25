@@ -37,7 +37,9 @@
 
         sqlSelect = "INSERT INTO rc_Files(fileID, fileName, filePath, groupID, date, currentOwner) VALUES (@0, @1, @2, @3, @4, @5)";
         db.Execute( sqlSelect, fileID, fileName, fileSavePath, groupId,
-                   DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString(), ( int ) Session["userID"] );
+                   DateTime.Now
+                   //String.Format(System.Globalization.DateTimeFormatInfo.InvariantInfo, "{0:G}", DateTime.Now )
+                   , ( int ) Session["userID"] );
 
     }
 
@@ -65,16 +67,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Upload File(s)</title>
+    <title></title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.js"></script>
+     <link type="text/css" rel="Stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/black-tie/jquery-ui.css" />
+    
 </head>
 <body>
     <form id="myForm" method="post"
           enctype="multipart/form-data"
           action="">
-<div>
-            <h1>Upload File(s)</h1>
+<div style="padding-left: 1em">
+            <h2>Upload File</h2>
                     
-    <div class="file-upload" id="file-upload-0">
+    <div class="file-upload" id="file-upload-0" style="padding-top: 0.5em">
             <div>
                 <p>
                 <input name="fileUpload" type="file">
@@ -88,7 +96,7 @@
         </div>
         
     @if (IsPost) {
-            <span>File uploaded!</span><br>
+            <p style="padding-top: 0.5em">File uploaded!</p><br>
 }
         </div>      
 

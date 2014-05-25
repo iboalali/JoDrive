@@ -79,7 +79,7 @@
 
         if ( isMember ) {
 
-            <p>
+            <p style="padding-top: 1em">
                 <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
                 <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
                 <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
@@ -106,8 +106,19 @@
                         </tr>
                         @foreach ( var item in data ) {
                             <tr>
+                                @{
+                            string fileName = string.Empty;
+                           if(item.fileName.Length >= 47)
+                           {
+                               fileName = item.fileName.Substring(0, 40) + "...";
+
+                           }else{
+                               fileName = item.fileName;
+
+                           }
+                                }
                                 <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
-                                    @item.fileName
+                                    @fileName
                                 </td>
                                 <td> @name </td>
                                 <td> @item.date </td>
@@ -125,7 +136,7 @@
                     </table>
                 </div>
             } else {
-                <p>You don't have any files, click <a href='~/uploadfiles?id=@groupId'>here</a> to start uploading</p>
+                <p style="padding-left: 1em">You don't have any files, click <a href='~/uploadfiles?id=@groupId'>here</a> to start uploading</p>
                 
                 
 

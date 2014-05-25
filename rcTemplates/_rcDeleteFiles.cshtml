@@ -1,0 +1,66 @@
+﻿@{
+    var groupID = Request["groupId"];
+
+    var db = Database.Open( "GP" );
+    var sqlSelect = "Select * From rc_Files Where groupID = @0";
+    var data = db.Query(sqlSelect, groupID);
+
+    if (IsPost)
+    {
+        var fileId = Request.Form["image"];
+         if (!fileId.IsEmpty())
+         {
+            var sqldelete = "Delete From rc_Files Where fileID= @0";
+            db.Execute(sqldelete, (string) fileId);
+            Response.Redirect(Request.RawUrl);
+         }
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <title></title>
+    </head>
+    <body>
+        
+        @if ( data != null ) 
+       {
+           <div class="table" >
+           <table>
+
+               <colgroup>
+                 <col span="1" style="width: 45%;">
+                 <col span="1" style="width: 30%;">
+                 <col span="1" style="width: 25%;">
+                 <col span="1" style="width: 5%;">
+              </colgroup>
+                   <tr>
+                       <th style="border-left: none"> FILE NAME </th>
+                       <th> MODIFIED </th>
+                       <th> </th>
+                       <th style="border-left: none"> </th>
+                   </tr>
+           @foreach ( var item in data ) 
+           {
+                   <tr>
+                       <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">@item.fileName</td>
+                       <td> blah </td>
+                       <td> hon </td>
+                       <td>
+                           <form method="post">
+                               <input type="image" src="~/rcLayouts/default/images/delete.png" name="image" value="@item.fileID" width="18" height="18" onclick="return confirm('Are you sure you want to delete?')"/>
+                           </form>
+                       </td>
+                   </tr>  
+           }
+            </table>
+          </div> 
+        }      
+    </body>
+</html>
