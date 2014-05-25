@@ -1,64 +1,95 @@
 ﻿@{
-    var groupId = Request["groupId"];
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+
+    }
+    var user = ( int ) Session["userID"];
+    var name = ( string ) Session["name"];
+
+    var groupId = Request["id"];
 
     var db = Database.Open( "GP" );
     var sqlSelect = "Select * From rc_Files Where groupID = @0";
-    var data = db.Query(sqlSelect, groupId);
+    var data = db.Query( sqlSelect, groupId );
 
-    if (IsPost)
-    {
+    sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
+    var g_data = db.QuerySingle( sqlSelect, groupId );
+
+    if ( IsPost ) {
         var fileId = Request.Form["image"];
-         if (!fileId.IsEmpty())
-         {
-            Response.Redirect("changeFileName?fileId="+ fileId +"&groupId=" + groupId);
-         }
+        if ( !fileId.IsEmpty() ) {
+            Response.Redirect( "changeFileName?fileId=" + fileId + "&groupId=" + groupId );
+        }
     }
 }
 
 <!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
-         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
-         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
-        <title></title>
-    </head>
-    <body>
-        
-        @if ( data != null ) 
-       {
-           <div class="table" >
-           <table>
+<head>
+    <meta charset="utf-8" />
+    <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
 
-               <colgroup>
-                 <col span="1" style="width: 45%;">
-                 <col span="1" style="width: 30%;">
-                 <col span="1" style="width: 25%;">
-                 <col span="1" style="width: 5%;">
-              </colgroup>
-                   <tr>
-                       <th style="border-left: none"> FILE NAME </th>
-                       <th> MODIFIED </th>
-                       <th> </th>
-                       <th style="border-left: none"> </th>
-                   </tr>
-           @foreach ( var item in data ) 
-           {
-                   <tr>
-                       <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">@item.fileName</td>
-                       <td> blah </td>
-                       <td> hon </td>
-                       <td>
-                           <form method="post">
-                               <input type="image" src="~/rcLayouts/default/images/rename.png" name="image" value="@item.fileID" width="18" height="18"/>
-                           </form>
-                       </td>
-                   </tr>  
-           }
+    <p style="padding-top: 1em">
+        <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+        <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+        <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+    </p>
+
+
+    @if ( data != null ) {
+        <div class="table">
+            <table>
+
+                <colgroup>
+                    <col span="1" style="width: 45%;">
+                    <col span="1" style="width: 30%;">
+                    <col span="1" style="width: 25%;">
+                    <col span="1" style="width: 5%;">
+                </colgroup>
+                <tr>
+                    <th style="border-left: none"> FILE NAME </th>
+                    <th> CURRENT OWNER </th>
+                    <th> DATE MODIFIED </th>
+                    <th style="border-left: none"> </th>
+                </tr>
+                @foreach ( var item in data ) {
+                    <tr>
+                        @{
+                            string fileName = string.Empty;
+                            if ( item.fileName.Length >= 35 ) {
+                                fileName = item.fileName.Substring( 0, 35 ) + "...";
+
+                            } else {
+                                fileName = item.fileName;
+
+                            }
+                        }
+                        <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
+                            @fileName
+                        </td>
+                        <td> @name </td>
+                        <td> @item.date </td>
+                        <td>
+
+                            <form method="post">
+                                <input type="image" src="~/rcLayouts/default/images/rename.png" name="image" value="@item.fileID" width="19" height="19" />
+                            </form>
+
+
+
+                        </td>
+                    </tr>
+                }
             </table>
-          </div> 
-        }      
-    </body>
+        </div>
+    }
+</body>
 </html>

@@ -29,6 +29,11 @@
             
             Session["userID"] = data.userID;
             Session["Name"] = data.firstName + " " + data.lastName;
+
+            if ( Request["ReturnURL"] != null ) {
+                Response.Redirect( "~/" + Request["ReturnURL"] );
+
+            }
             //sqlSelect = "SELECT userName FROM rc_SessionInfo";
             //data = db.QuerySingle( sqlSelect );
             //
