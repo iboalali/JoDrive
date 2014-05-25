@@ -36,10 +36,25 @@
 
 
     if ( IsPost ) {
-        var fileId = Request.Form["image"];
-        sqlSelect = "SELECT filePath FROM rc_Files WHERE fileID=@0";
-        var download_data = db.QuerySingle( sqlSelect, fileId );
-        FileWebRequest.Create( download_data.filePath );
+        var fileId = int.Parse( Request.Form["image"] );
+
+        byte[] file = rcFunctions.GetFile( rcFunctions.getdownloadPath( fileId ) );
+        
+        
+        Response.ClearContent();
+        Response.ContentType = "application/octet-stream";
+
+        Response.AddHeader( "content-disposition", "attachment; filename=" + rcFunctions.getFileName( fileId ) );
+
+        Response.BinaryWrite( file );
+        Response.End();
+       
+        
+        
+        
+        
+        
+        //FileWebRequest.Create( download_data.filePath );
 
 
         //get the download file path
@@ -54,9 +69,15 @@
     <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
     <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
     <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
-    <script>
+    <script type="text/javascript">
+
+        function downloadFile(path) {
+            document.location.href = path;
+
+        }
 
         var downloadURL = function downloadURL(url) {
+
             var hiddenIFrameID = 'hiddenDownloader',
                 iframe = document.getElementById(hiddenIFrameID);
             if (iframe === null) {
@@ -68,7 +89,15 @@
             iframe.src = url;
         };
 
+        var sre = function setHref(s){
+            return (document.location.href = s);
+
+        }
+
     </script>
+
+
+
 
 
     <title></title>
@@ -122,12 +151,15 @@
                                 <td> @name </td>
                                 <td> @item.date </td>
                                 <td>
+                                    
+                                        <form method="post">
+                                            <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19"/>
+                                        </form>
+@*
+    <a href="javascript:void(0);" onclick="document.execCommand('SaveAs', true, '@rcFunctions.getdownloadPath(item.fileID)')"><img src="~/rcLayouts/default/images/download.png" height="18" width="18" /></a>
 
-                                    <form method="post">
-                                        <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" />
-                                    </form>
-
-
+    <a href="javascript:void(0)" onclick="downloadURL( '@rcFunctions.getdownloadPath(item.fileID)' )"><img src="~/rcLayouts/default/images/download.png" height="18" width="18" /></a>
+*@
 
                                 </td>
                             </tr>

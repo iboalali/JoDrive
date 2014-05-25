@@ -64,8 +64,36 @@
         return _retV;
 
     }
+
+    public static byte[] GetFile ( string s ) {
+        byte[] data;
+        using ( System.IO.FileStream fs = System.IO.File.OpenRead( s ) ) {
+            data = new byte[fs.Length];
+            int br = fs.Read( data, 0, data.Length );
+            if ( br != fs.Length )
+                throw new System.IO.IOException( s );
+        }
+        return data;
+    }
     
-    
+    public static string getdownloadPath(int id){
+        Database db = Database.Open("GP");
+        var sqlSelect = "SELECT * FROM rc_Files WHERE fileID=@0";
+        var download_data = @db.QuerySingle( sqlSelect, id );
+
+        //string path = download_data.filePath.Remove(download_data.filePath.LastIndexOf( '\\' ) + 1);
+        ////path = path.Replace("\\", "\\\\");
+        //path += download_data.fileName;
+        return download_data.filePath;        
+    }
+
+    public static string getFileName ( int id ) {
+        Database db = Database.Open( "GP" );
+        var sqlSelect = "SELECT * FROM rc_Files WHERE fileID=@0";
+        var download_data = @db.QuerySingle( sqlSelect, id );
+
+        return download_data.fileName;
+    }
     
     
 }

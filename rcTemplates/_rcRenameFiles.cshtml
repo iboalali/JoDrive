@@ -20,7 +20,8 @@
     if ( IsPost ) {
         var fileId = Request.Form["image"];
         if ( !fileId.IsEmpty() ) {
-            Response.Redirect( "changeFileName?fileId=" + fileId + "&groupId=" + groupId );
+            string url = "~/changefilename?fileId=" + fileId.ToString() + "&groupId=" + groupId.ToString();
+            Response.Redirect( url );
         }
     }
 }

@@ -1,4 +1,11 @@
 ﻿@{
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+
+    }
+    
     var fileId = Request.Params["fileId"];
     var groupId = Request.Params["groupId"];
     var errMSG = "";
