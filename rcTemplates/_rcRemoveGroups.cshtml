@@ -14,10 +14,10 @@
             db.Execute(sqldelete2, groupId);
             var sqldelete3 = "Delete From rc_UserGroups Where groupID= @0";
             db.Execute(sqldelete3, groupId);
-            Response.Redirect(Request.RawUrl);
             string path = Server.MapPath("~/uploadedFiles/" + groupId.ToString() + "/");
             
-            Directory.Delete(path);
+            Directory.Delete(path, true);
+            Response.Redirect( Request.RawUrl );
 
          }
     }
