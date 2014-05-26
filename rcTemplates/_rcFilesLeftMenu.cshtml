@@ -1,21 +1,49 @@
 ﻿@{
-    var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
-    if ( Session["userID"] == null ) {
-
-        Response.Redirect( "~/?ReturnURL=" + pageName );
-
-    }
-    var groupId = Request["id"];
+   var userID = (int) Session["userID"];
+   var groupId = Request["groupId"];
+   bool owner;
 
    var db = Database.Open( "GP" );
    var sqlSelect = "Select * From rc_groups Where groupID= @0";
    var data = db.QuerySingle( sqlSelect, groupId );
 
-   if(data == null)
+   if (data.ownerID == userID)
    {
-       Response.Redirect("~/groups");
+       owner = true;
+   }   
+   else
+   {
+       owner = false;
    }
 
+   if (IsPost)
+   { 
+       switch ( Request.Form["button"] )
+       {
+           case "delete":
+            var sqldelete1 = "Delete From rc_groups Where groupID= @0";
+            db.Execute(sqldelete1, groupId);
+            var sqldelete2 = "Delete From rc_Files Where groupID= @0";
+            db.Execute(sqldelete2, groupId);
+            var sqldelete3 = "Delete From rc_UserGroups Where groupID= @0";
+            db.Execute(sqldelete3, groupId);
+
+            string path = Server.MapPath("~/uploadedFiles/" + groupId.ToString() + "/");            
+            Directory.Delete(path, true);
+
+            Response.Redirect("groups");
+            break;
+
+           case "leave":
+           var sqldelete = "Delete From rc_UserGroups Where groupID= @0 and userID= @1";
+           db.Execute(sqldelete, groupId, userID);
+           Response.Redirect("groups");
+
+           break;
+            default:
+            break;
+        }
+   }
 }
 
 <!DOCTYPE html>
@@ -32,14 +60,29 @@
 <body>
     <div id='cssmenu' style="width: 100%">
         <ul>
-            @if ( pageName == ("files?id=" + groupId.ToString()) ) { <li class=""><a href='~/groups'><span>< Return</span></a></li> }
-            else { <li class=""><a href='~/files?id=@groupId'><span>< Return</span></a></li> }
-            <li><a href='~/uploadfiles?id=@groupId'><span>Upload Files</span></a></li>
-            <li><a href="~/deletefiles?id=@groupId"><span>Delete Files</span></a></li>
-            <li><a href='~/renamefiles?id=@groupId'><span>Rename Files</span></a></li>
-            <li><a href='~/viewmembers?id=@groupId'><span>View Members</span></a></li>
-            <li><a href='~/removegroup?id=@groupId'><span>Rename Group</span></a></li>
-            <li class='last'><a href='~/leavegroup?id=@groupId'> @if ( data.ownerID == ( int ) Session["userID"] ) { <span>Delete Group</span> } else { <span>Leave Group</span> } </a></li>
+            @if (@owner)
+            {
+                <li><a href='~/uploadfiles?groupId=@groupId'><span>Upload Files</span></a></li>
+                <li><a href="~/deletefiles?groupId=@groupId"><span>Delete Files</span></a></li>
+                <li><a href='~/renamefiles?groupId=@groupId'><span>Rename Files</span></a></li>
+                <li><a href='~/renamegroup?groupId=@groupId'><span>Rename Group</span></a></li>
+                <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
+                <li>
+                    <form method="post">
+                        <button class='last' style="width: 100%" name="button" type="submit" value="delete" onclick="return confirm('Are you sure you want to delete group ?')">Remove Group</button>
+                    </form>
+                </li>
+            }
+            else
+            {
+                <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
+                <li>
+                    <form method="post">
+                        <button class='last' style="width: 100%" name="button" type="submit" value="leave" onclick="return confirm('Are you sure you want to leave group ?')">Leave Group</button>
+                    </form>
+                </li>
+            }
+            
         </ul>
     </div>
 </body>

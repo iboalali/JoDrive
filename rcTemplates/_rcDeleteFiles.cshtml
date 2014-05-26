@@ -6,7 +6,7 @@
 
     }
 
-    var groupID = Request["id"];
+    var groupID = Request["groupId"];
     var user = ( int ) Session["userID"];
 
     var db = Database.Open( "GP" );
@@ -18,7 +18,7 @@
     string name = ( string ) Session["name"];
     
     if ( data.Count() == 0 ) {
-        Response.Redirect("~/files?id=" + groupID.ToString());
+        Response.Redirect("~/files?groupId=" + groupID.ToString());
     }
     
     if ( IsPost ) {

@@ -163,3 +163,72 @@
 #cssmenu ul ul li > a:hover::after {
   border-color: #ffffff;
 }
+
+#cssmenu ul li form button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style: none;
+  line-height: 1;
+  display: block;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+#cssmenu > ul > li > form > button {
+  padding: 15px 20px;
+  border-left: 1px solid #3c90b9;
+  border-right: 1px solid #3c90b9;
+  border-top: 1px solid #3c90b9;
+  cursor: pointer;
+  z-index: 2;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #ffffff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  background: #71b1d1;
+  background: -webkit-linear-gradient(#71b1d1, #5ea6cb);
+  background: -moz-linear-gradient(#71b1d1, #5ea6cb);
+  background: -o-linear-gradient(#71b1d1, #5ea6cb);
+  background: -ms-linear-gradient(#71b1d1, #5ea6cb);
+  background: linear-gradient(#71b1d1, #5ea6cb);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+#cssmenu > ul > li > form > button:hover,
+#cssmenu > ul > li.active > form > button,
+#cssmenu > ul > li.open > form > button {
+  color: #eeeeee;
+  background: #5ea6cb;
+  background: -webkit-linear-gradient(#5ea6cb, #4a9cc5);
+  background: -moz-linear-gradient(#5ea6cb, #4a9cc5);
+  background: -o-linear-gradient(#5ea6cb, #4a9cc5);
+  background: -ms-linear-gradient(#5ea6cb, #4a9cc5);
+  background: linear-gradient(#5ea6cb, #4a9cc5);
+}
+#cssmenu > ul > li.open > form > button {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid #3c90b9;
+}
+#cssmenu > ul > li:last-child > form > button,
+#cssmenu > ul > li.last > form > button {
+  border-bottom: 1px solid #3c90b9;
+}
+
+#cssmenu > ul > li > ul > li:last-child > button,
+#cssmenu > ul > li > ul > li.last > button {
+  border-bottom: 0;
+}
+
+#cssmenu > ul > li > ul > li.open:last-child > button,
+#cssmenu > ul > li > ul > li.last.open > button {
+  border-bottom: 1px solid #32373e;
+}
+#cssmenu > ul > li > ul > li.open:last-child > ul > li:last-child > button {
+  border-bottom: 0;
+}
+
+

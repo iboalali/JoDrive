@@ -63,15 +63,19 @@
 
             int requestID;
             Random random = new Random();
-
+            bool found = false;
             while ( true ) {
                 requestID = random.Next();
 
-                foreach ( var item in reqData ) {
-                    if ( item.id == requestID ) {
+                foreach ( var item in data ) {
+                        if ( item.id == requestID ) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(found){
                         continue;
                     }
-                }
 
                 break;
             }

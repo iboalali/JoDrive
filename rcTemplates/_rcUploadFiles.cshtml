@@ -25,14 +25,19 @@
 
         int fileID;
         Random random = new Random();
+        bool found = false;
         while ( true ) {
             fileID = random.Next();
 
             foreach ( var item in data ) {
-                if ( item.fileID == fileID ) {
-                    continue;
-                }
-            }
+                        if ( item.fileID == fileID ) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(found){
+                        continue;
+                    }
 
             break;
         }

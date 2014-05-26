@@ -45,13 +45,18 @@
 
                 int confID = 0;
                 Random random = new Random();
+                bool found = false;
                 while ( true ) {
                     confID = random.Next();
 
                     foreach ( var item in data ) {
                         if ( item.confID == confID ) {
-                            continue;
+                            found = true;
+                            break;
                         }
+                    }
+                    if(found){
+                        continue;
                     }
 
                     break;

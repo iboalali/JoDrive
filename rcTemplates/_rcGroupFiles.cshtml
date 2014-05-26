@@ -10,7 +10,7 @@
     var user = ( int ) Session["userID"];
     var name = string.Empty;
 
-    var groupId = Request["id"];
+    var groupId = Request["groupId"];
 
     var db = Database.Open( "GP" );
     var sqlSelect = "Select * From rc_Files Where groupID= @0";
@@ -167,7 +167,7 @@
                     </table>
                 </div>
             } else {
-                <p style="padding-left: 1em">You don't have any files, click <a href='~/uploadfiles?id=@groupId'>here</a> to start uploading</p>
+                <p style="padding-left: 1em">You don't have any files, click <a href='~/uploadfiles?groupId=@groupId'>here</a> to start uploading</p>
 
 
 

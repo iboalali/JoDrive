@@ -22,14 +22,19 @@
 
         var data = db.Query( sqlSelect );
         Random random = new Random();
+        bool found = false;
         while ( true ) {
             s_groupID = random.Next();
 
             foreach ( var item in data ) {
-                if ( item.groupID == s_groupID ) {
-                    continue;
-                }
-            }
+                        if ( item.groupID == s_groupID ) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(found){
+                        continue;
+                    }
 
             break;
         }
