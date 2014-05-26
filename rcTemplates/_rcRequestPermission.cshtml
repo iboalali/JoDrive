@@ -38,26 +38,11 @@
     if ( IsPost ) {
         var fileId = int.Parse( Request.Form["image"] );
 
-        byte[] file = rcFunctions.GetFile( rcFunctions.getdownloadPath( fileId ) );
+        // put the request here in the database nad don't leave this site
+        
+        
+        //sqlSelect = ""
 
-
-        Response.ClearContent();
-        Response.ContentType = "application/octet-stream";
-
-        Response.AddHeader( "content-disposition", "attachment; filename=" + rcFunctions.getFileName( fileId ) );
-
-        Response.BinaryWrite( file );
-        Response.End();
-
-
-
-
-
-
-        //FileWebRequest.Create( download_data.filePath );
-
-
-        //get the download file path
     }
 }
 
@@ -126,7 +111,7 @@
                                 <td>
 
                                     <form method="post">
-                                        <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" style="outline: none" />
+                                        <input type="image" src="~/rcLayouts/default/images/lock.png" name="image" value="@item.fileID" width="19" height="19" style="outline: none" />
                                     </form>
                                     @*
                                         <a href="javascript:void(0);" onclick="document.execCommand('SaveAs', true, '@rcFunctions.getdownloadPath(item.fileID)')"><img src="~/rcLayouts/default/images/download.png" height="18" width="18" /></a>

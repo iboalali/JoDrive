@@ -6,10 +6,16 @@
     }
 
     int groupID = int.Parse( Request["groupId"] );
-
+    var user = ( int ) Session["userID"];
+    var name = ( string ) Session["name"];
+    
+    
     var db = Database.Open("GP");
     var sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID IN (SELECT userID FROM rc_UserGroups WHERE groupID = @0)";
-    var data = db.Query(sqlSelect, groupID);
+    var data = db.Query( sqlSelect, groupID );
+
+    sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
+    var g_data = db.QuerySingle( sqlSelect, groupID );
 
     sqlSelect = "SELECT ownerID FROM rc_groups WHERE groupID = @0";
     var groupAdmin = db.QuerySingle(sqlSelect, groupID);
@@ -37,10 +43,20 @@
          <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
          <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
          <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
         <title></title>
     </head>
     <body>
          @if ( data != null ) {
+             
+             <fieldset style="background-color: #E5E5E5; ">
+
+                    <p style="padding-top: 1em">
+                        <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+                        <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+                        <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+                    </p>
+                </fieldset>
 
         <div class="table">
             <table>

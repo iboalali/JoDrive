@@ -6,8 +6,8 @@
 
         Response.Redirect( "~/?ReturnURL=" + pageName );
     }
-    
-    
+
+
 
     var groupId = Request["groupId"];
     var user = ( int ) Session["userID"];
@@ -32,14 +32,14 @@
             fileID = random.Next();
 
             foreach ( var item in data ) {
-                        if ( item.fileID == fileID ) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if(found){
-                        continue;
-                    }
+                if ( item.fileID == fileID ) {
+                    found = true;
+                    break;
+                }
+            }
+            if ( found ) {
+                continue;
+            }
 
             break;
         }
@@ -85,40 +85,45 @@
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.js"></script>
     <link type="text/css" rel="Stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/black-tie/jquery-ui.css" />
+    <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
 
 </head>
 <body>
     <form id="myForm" method="post"
           enctype="multipart/form-data"
           action="">
+        <fieldset style="background-color: #E5E5E5; ">
 
-        <p style="padding-top: 1em">
-            <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
-            <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
-            <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
-        </p>
+            <p style="padding-top: 1em">
+                <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+                <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+                <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+            </p>
+        </fieldset>
 
-        <div style="padding-left: 1em">
-            <h2>Upload File</h2>
+        <fieldset>
+            <div style="padding-left: 1em">
+                <h2>Upload File</h2>
 
-            <div class="file-upload" id="file-upload-0" style="padding-top: 0.5em">
-                <div>
-                    <p>
-                        <input name="fileUpload" type="file">
-                    </p>
+                
+                <div class="file-upload" id="file-upload-0" style="padding-top: 0.5em">
+                    <div>
+                        <p>
+                            <input name="fileUpload" type="file">
+                        </p>
 
+                    </div>
                 </div>
+
+                <div class="file-upload-buttons">
+                    <input type="submit" value="Upload"> <span style="padding-left: 1em"><a href="~/files?groupId=@groupId">or return to the group</a></span>
+                </div>
+
+                @if ( IsPost ) {
+                    <p style="padding-top: 0.5em">File uploaded!</p><br>
+                }
             </div>
-
-            <div class="file-upload-buttons">
-                <input type="submit" value="Upload"> <span style="padding-left: 1em"><a href="~/files?groupId=@groupId">or return to the group</a></span>
-            </div>
-
-            @if ( IsPost ) {
-                <p style="padding-top: 0.5em">File uploaded!</p><br>
-            }
-        </div>
-
+        </fieldset>
 
 
 

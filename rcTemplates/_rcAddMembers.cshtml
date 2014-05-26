@@ -6,17 +6,22 @@
     }
 
     int groupID = int.Parse( Request["id"] );
-
+    var user = ( int ) Session["userID"];
+    var name = ( string ) Session["name"];
     Validation.Add( "email", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
 
     var userMail = Request["email"];
+    var db = Database.Open( "GP" );
+    var sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
+    var g_data = db.QuerySingle( sqlSelect, groupID );
 
 
     if ( IsPost ) {
         var em = Request["email"];
-        var db = Database.Open( "GP" );
-        var sqlSelect = "SELECT rcUser FROM rc_UserLogin WHERE email=@0";
+        sqlSelect = "SELECT rcUser FROM rc_UserLogin WHERE email=@0";
         var data = db.QuerySingle( sqlSelect, em );
+
+        
 
         if ( data != null ) {
             sqlSelect = "INSERT INTO rc_UserGroups(groupID, userName) VALUES (@0, @1)";
@@ -90,10 +95,21 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Add Members</title>
+    <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
+    <title></title>
 </head>
 <body>
+    <fieldset style="background-color: #E5E5E5; ">
 
+        <p style="padding-top: 1em">
+            <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+            <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+            <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+        </p>
+    </fieldset>
     <fieldset>
         <form action="" method="post">
             <p>

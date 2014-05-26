@@ -5,12 +5,17 @@
         Response.Redirect( "~/?ReturnURL=" + pageName );
     }
 
-    var db = Database.Open("GP");
-
+    var db = Database.Open( "GP" );
+    var userID = ( int ) Session["userID"];
+    var name = ( string ) Session["name"];
     int groupID = int.Parse( Request["groupId"] );
     var sql = "SELECT * FROM rc_UserGroups WHERE groupID = @0";
     var returned = db.Query(sql, groupID);
 
+    var sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
+    var g_data = db.QuerySingle( sqlSelect, groupID );
+    
+    
     List<int> usersInGroup = new List<int>();
 
     foreach(var item in returned)
@@ -28,7 +33,7 @@
         case "Search":
         hasRunSearch = true;
         var searchInfo = Request["searchString"];
-        var sqlSelect = "SELECT * FROM rc_UserLogin WHERE firstName = @0 OR lastName = @0 OR email = @0";
+        sqlSelect = "SELECT * FROM rc_UserLogin WHERE firstName = @0 OR lastName = @0 OR email = @0";
         var result = db.Query(sqlSelect, searchInfo);
         if(result != null)
         {
@@ -121,12 +126,23 @@
 
 <html lang="en">
     <head>
+        <title></title>
         <meta charset="utf-8" />
          <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
          <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
          <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
     </head>
     <body>
+        <fieldset style="background-color: #E5E5E5; ">
+
+            <p style="padding-top: 1em">
+                <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+                <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == userID ) { <text>You</text> } else { @name }</span>
+                <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+            </p>
+        </fieldset>
+
         <p>You can search for users with their first name, last name, or email address</p>
         <form method="post"><label for="searchString">Search</label>
         <input type="text" name="searchString">
@@ -134,6 +150,7 @@
         </br>
 
         @if(isResultFound && (results.Count() != 0)){
+            
             <div class="table">
             <table>
 

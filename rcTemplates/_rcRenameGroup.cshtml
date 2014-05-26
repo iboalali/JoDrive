@@ -1,52 +1,86 @@
 ﻿@{
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+
+    }
+    
     var errMSG = "";
     var newName = "";
     var groupId = Request["groupId"];
 
+    var user = ( int ) Session["userID"];
+    var name = ( string ) Session["name"];
+    
     var db = Database.Open( "GP" );
     var sqlSelect = "Select * From rc_groups Where groupID=@0";
-    var data = db.Query(sqlSelect, groupId);
+    var data = db.Query( sqlSelect, groupId );
 
-    Validation.RequireField("newName","Enter new file name");
+    sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
+    var g_data = db.QuerySingle( sqlSelect, groupId );
+
+    Validation.RequireField( "newName", "Enter new file name" );
 
     newName = Request["newName"];
 
-    if (IsPost && Validation.IsValid()){
+    if ( IsPost && Validation.IsValid() ) {
         var sqlUp = "Update rc_groups set groupName=@0 where groupID=@1";
-        try
-        {
-            db.Execute(sqlUp, newName, groupId);
+        try {
+            db.Execute( sqlUp, newName, groupId );
             errMSG = "<b>Thank You - changes saved !</b>";
             Response.Redirect( "files?groupId=" + groupId.ToString() );
-        }
-        catch (Exception ex)
-        {
+        } catch ( Exception ex ) {
             errMSG = ex.Message.ToString();
         }
     }
 }
 
-<form method="post" action="">
-@if (data != null)
-{
-foreach ( var item in data ) 
- {
-     <fieldset>
-        <ol>
-            <li>
-                <label for="oldName">Current group name:</label>
-                <p>@item.groupName</p>
-                </li>
-                <li>
-                <label for="newName">New group name:</label>
-                <input type="text" name="newName" id="newName" value="@newName" @Validation.For("newName") />
-                    @Html.ValidationMessage("newName")
-            </li>
-        </ol>
-          <p class="form-actions">
-            <input type="submit" value="Change" title="Change" />
-        </p>
-    </fieldset>
-}
-}
-</form>
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+
+    <form method="post" action="">
+        @if ( data != null ) {
+            foreach ( var item in data ) {
+
+                <fieldset style="background-color: #E5E5E5; ">
+
+                    <p style="padding-top: 1em">
+                        <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+                        <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+                        <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+                    </p>
+                </fieldset>
+
+                <fieldset>
+                    <ol>
+                        <li>
+                            <label for="oldName">Current group name:</label>
+                            <p style="padding-left:1em">@item.groupName</p>
+                        </li>
+                        <li>
+                            <label for="newName">New group name:</label>
+                            <input type="text" name="newName" id="newName" value="@newName" @Validation.For( "newName" ) />
+                            @Html.ValidationMessage( "newName" )
+                        </li>
+                    </ol>
+                    <p class="form-actions">
+                        <input type="submit" value="Change" title="Change" />
+                    </p>
+                </fieldset>
+            }
+        }
+    </form>
+
+</body>
+</html>
