@@ -41,7 +41,7 @@
                 </colgroup>
                 <tr>
                     <th style="border-left: none"> NAME </th>
-                    <th> OWNER </th>
+                    <th> ADMIN </th>
                     <th> MODIFIED </th>
                 </tr>
                 @foreach ( var item in data ) {
@@ -66,6 +66,11 @@
                                 sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID=@0";
                                 var user_data = db.QuerySingle( sqlSelect, item.ownerID );
                                 name = user_data.firstName + " " + user_data.lastName;
+                                if ( name == (string) Session["name"] ) {
+                                    name = "YOU";
+                                }
+                                
+                                
                             }
                             @name
                         </td>

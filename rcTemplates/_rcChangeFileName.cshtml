@@ -67,7 +67,7 @@
                 </li>
                 <li>
                 <label for="newName">New file name:</label>
-                <input type="text" name="newName" id="newName" value="@newName" @Validation.For("newName") />
+                <input type="text" name="newName" id="newName" value="@newName" @Validation.For("newName") onload="" />
                     @Html.ValidationMessage("newName")
             </li>
         </ol>

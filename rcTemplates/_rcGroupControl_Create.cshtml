@@ -27,14 +27,14 @@
             s_groupID = random.Next();
 
             foreach ( var item in data ) {
-                        if ( item.groupID == s_groupID ) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if(found){
-                        continue;
-                    }
+                if ( item.groupID == s_groupID ) {
+                    found = true;
+                    break;
+                }
+            }
+            if ( found ) {
+                continue;
+            }
 
             break;
         }
@@ -46,10 +46,10 @@
         //            + "WHERE groupName=@0 and owner=@1 and groupID=@2 and description=@3";
 
         db.Execute( sqlSelect, s_groupName, userID, s_groupID, s_groupDescription,
-        //DateTime.Now);
-        String.Format(System.Globalization.DateTimeFormatInfo.InvariantInfo, "{0:G}", DateTime.Now ) );
+            //DateTime.Now);
+        String.Format( System.Globalization.DateTimeFormatInfo.InvariantInfo, "{0:G}", DateTime.Now ) );
 
-        //DateTime.Now.Month + "/" + DateTime.Now.Day + "/" + DateTime.Now.Year + " " 
+        //DateTime.Now.Month + "/" + DateTime.Now.Day + "/" + DateTime.Now.Year + " "
         //+  DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + " ");
 
         sqlSelect = "INSERT INTO rc_UserGroups(groupID, userID)"
@@ -91,7 +91,10 @@
 
         <p>
             <label for="groupName">Group Description</label><br>
-            <input type="text" name="groupDescription" @Validation.For( "groupDescription" ) id="groupName"> <em style="padding-left: 1em">Optional</em>
+            <textarea name="groupDescription" rows="4" cols="50"></textarea><em style="padding-left: 1em">Optional</em>
+            @*
+                <input type="text" name="groupDescription" @Validation.For( "groupDescription" ) id="groupName"> <em style="padding-left: 1em">Optional</em>
+            *@
         </p>
 
         <p>

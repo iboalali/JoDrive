@@ -1,50 +1,51 @@
 ﻿@{
-   var userID = (int) Session["userID"];
-   var groupId = Request["groupId"];
-   bool owner;
-   var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+    var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+    if ( Session["userID"] == null ) {
 
-   var db = Database.Open( "GP" );
-   var sqlSelect = "Select * From rc_groups Where groupID= @0";
-   var data = db.QuerySingle( sqlSelect, groupId );
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+    }
+    
+    var userID = ( int ) Session["userID"];
+    var groupId = Request["groupId"];
+    bool owner;
+    //var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
-   if (data.ownerID == userID)
-   {
-       owner = true;
-   }   
-   else
-   {
-       owner = false;
-   }
+    var db = Database.Open( "GP" );
+    var sqlSelect = "Select * From rc_groups Where groupID= @0";
+    var data = db.QuerySingle( sqlSelect, groupId );
 
-   if (IsPost)
-   { 
-       switch ( Request.Form["button"] )
-       {
-           case "delete":
-            var sqldelete1 = "Delete From rc_groups Where groupID= @0";
-            db.Execute(sqldelete1, groupId);
-            var sqldelete2 = "Delete From rc_Files Where groupID= @0";
-            db.Execute(sqldelete2, groupId);
-            var sqldelete3 = "Delete From rc_UserGroups Where groupID= @0";
-            db.Execute(sqldelete3, groupId);
+    if ( data.ownerID == userID ) {
+        owner = true;
+    } else {
+        owner = false;
+    }
 
-            string path = Server.MapPath("~/uploadedFiles/" + groupId.ToString() + "/");            
-            Directory.Delete(path, true);
+    if ( IsPost ) {
+        switch ( Request.Form["button"] ) {
+            case "delete":
+                var sqldelete1 = "Delete From rc_groups Where groupID= @0";
+                db.Execute( sqldelete1, groupId );
+                var sqldelete2 = "Delete From rc_Files Where groupID= @0";
+                db.Execute( sqldelete2, groupId );
+                var sqldelete3 = "Delete From rc_UserGroups Where groupID= @0";
+                db.Execute( sqldelete3, groupId );
 
-            Response.Redirect("groups");
-            break;
+                string path = Server.MapPath( "~/uploadedFiles/" + groupId.ToString() + "/" );
+                Directory.Delete( path, true );
 
-           case "leave":
-           var sqldelete = "Delete From rc_UserGroups Where groupID= @0 and userID= @1";
-           db.Execute(sqldelete, groupId, userID);
-           Response.Redirect("groups");
+                Response.Redirect( "groups" );
+                break;
 
-           break;
+            case "leave":
+                var sqldelete = "Delete From rc_UserGroups Where groupID= @0 and userID= @1";
+                db.Execute( sqldelete, groupId, userID );
+                Response.Redirect( "groups" );
+
+                break;
             default:
-            break;
+                break;
         }
-   }
+    }
 }
 
 <!DOCTYPE html>
@@ -56,40 +57,41 @@
 
     <link href="/menu_source/styles.css" rel="stylesheet" type="text/css">
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.4/mootools-yui-compressed.js"></script>
     <script type='text/javascript' src='/menu_source/menu_jquery.js'></script>
 </head>
 <body>
     <div id='cssmenu' style="width: 100%">
         <ul>
-            @if (@owner)
-            {
-                if ( pageName == ("files?groupId=" + groupId.ToString()) ) { <li class=""><a href='~/groups'><span>< Return</span></a></li> }
-                else { <li class=""><a href='~/files?groupId=@groupId'><span>< Return</span></a></li> }
-                <li><a href='~/uploadfiles?groupId=@groupId'><span>Upload Files</span></a></li>
-                <li><a href="~/deletefiles?groupId=@groupId"><span>Delete Files</span></a></li>
-                <li><a href='~/renamefiles?groupId=@groupId'><span>Rename Files</span></a></li>
-                <li><a href='~/renamegroup?groupId=@groupId'><span>Rename Group</span></a></li>
-                <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
-                <li>
-                    <form method="post">
-                        <button class='last' style="width: 100%;outline: none" name="button" type="submit" value="delete" onclick="return confirm('Are you sure you want to delete this group and all it\'s data?')">Remove Group</button>
-                    </form>
-                </li>
+            @if ( @owner ) {
+                if ( pageName == ( "files?groupId=" + groupId.ToString() ) ) {
+                    <li class=""><a href='~/groups'><span>< Return</span></a></li> } else {
+                    <li class=""><a href='~/files?groupId=@groupId'><span>< Return</span></a></li> }
+                    <li><a href='~/uploadfiles?groupId=@groupId'><span>Upload Files</span></a></li>
+                    <li><a href="~/deletefiles?groupId=@groupId"><span>Delete Files</span></a></li>
+                    <li><a href='~/renamefiles?groupId=@groupId'><span>Rename Files</span></a></li>
+                    <li><a href='~/renamegroup?groupId=@groupId'><span>Rename Group</span></a></li>
+                    <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
+                    <li>
+                        <form method="post">
+                            <button class='last' style="width: 100%;outline: none" name="button" type="submit" value="delete" onclick="return confirm('Are you sure you want to delete this group and all it\'s data?')">Remove Group</button>
+                        </form>
+                    </li>
+            } else {
+                if ( pageName == ( "files?groupId=" + groupId.ToString() ) ) {
+                    <li class=""><a href='~/groups'><span>< Return</span></a></li> } else {
+                    <li class=""><a href='~/files?groupId=@groupId'><span>< Return</span></a></li> }
+                    <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
+                    <li><a href="~/requestpermission?groupId=@groupId">Request Permission</a></li>
+                    <li>
+                        <form method="post">
+                            <button class='last' style="width: 100%;outline: none" name="button" type="submit" value="leave" onclick="return confirm('Are you sure you want to leave this group?')">Leave Group</button>
+                        </form>
+                    </li>
             }
-            else
-            {
-                if ( pageName == ("files?groupId=" + groupId.ToString()) ) { <li class=""><a href='~/groups'><span>< Return</span></a></li> }
-                else { <li class=""><a href='~/files?groupId=@groupId'><span>< Return</span></a></li> }
-                <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
-                <li><a href="~/requestpermission?groupId=@groupId">Request Permission</a></li>
-                <li>
-                    <form method="post">
-                        <button class='last' style="width: 100%;outline: none" name="button" type="submit" value="leave" onclick="return confirm('Are you sure you want to leave this group?')">Leave Group</button>
-                    </form>
-                </li>
-            }
-            
+
         </ul>
     </div>
 </body>
+
 </html>
