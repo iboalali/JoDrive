@@ -7,7 +7,7 @@
 
     var db = Database.Open("GP");
 
-    int groupID = int.Parse( Request["id"] );
+    int groupID = int.Parse( Request["groupId"] );
     var sql = "SELECT * FROM rc_UserGroups WHERE groupID = @0";
     var returned = db.Query(sql, groupID);
 
@@ -67,7 +67,7 @@
             while ( true ) {
                 requestID = random.Next();
 
-                foreach ( var item in data ) {
+                foreach ( var item in reqData ) {
                         if ( item.id == requestID ) {
                             found = true;
                             break;
@@ -156,7 +156,7 @@
                            @results[i+2]
                         </td>
                         <td>@if(!usersInGroup.Contains(int.Parse(results[i+3]))){<form method="post">
-                                <input type="image" src="~/rcLayouts/default/images/addUser.png" title="Add User" name="btn" value="@results[i+3]" width="18" height="18" onclick="return confirm('A confirmation email will be sent to @results[i] @results[i+1], Are you sure you want to add the user to the group?')"/>
+                                <input type="image" src="~/rcLayouts/default/images/addUser.png" title="Add User" style="outline:none" name="btn" value="@results[i+3]" width="18" height="18" onclick="return confirm('A confirmation email will be sent to @results[i] @results[i+1], Are you sure you want to add the user to the group?')"/>
                         </form>}</td>
                     </tr>
                             }
@@ -165,7 +165,7 @@
                 }
         @if(hasRunSearch && results.Count() == 0){
             <p>Your search returned 0 results!<br>
-            Make sure you entered correct search data, or <a href="~/invite?id=@groupID">invite a new user to the website</a>.
+            Make sure you entered correct search data, or <a href="~/invite?groupId=@groupID">invite a new user to the website</a>.
             </p>
 
         }

@@ -5,7 +5,7 @@
         Response.Redirect( "~/?ReturnURL=" + pageName );
     }
 
-    int groupID = int.Parse( Request["id"] );
+    int groupID = int.Parse( Request["groupId"] );
 
     var db = Database.Open("GP");
     var sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID IN (SELECT userID FROM rc_UserGroups WHERE groupID = @0)";

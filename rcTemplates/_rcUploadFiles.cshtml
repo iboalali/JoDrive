@@ -6,8 +6,10 @@
 
         Response.Redirect( "~/?ReturnURL=" + pageName );
     }
+    
+    
 
-    var groupId = Request["id"];
+    var groupId = Request["groupId"];
     var user = ( int ) Session["userID"];
     string name = ( string ) Session["name"];
     var db = Database.Open( "GP" );
@@ -109,7 +111,7 @@
             </div>
 
             <div class="file-upload-buttons">
-                <input type="submit" value="Upload"> <span style="padding-left: 1em"><a href="~/files?id=@groupId">or return to the group</a></span>
+                <input type="submit" value="Upload"> <span style="padding-left: 1em"><a href="~/files?groupId=@groupId">or return to the group</a></span>
             </div>
 
             @if ( IsPost ) {

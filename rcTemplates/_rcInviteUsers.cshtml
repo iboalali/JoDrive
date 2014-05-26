@@ -19,9 +19,7 @@
         var data = db.QuerySingle( sqlSelect, em );
 
         if ( data != null ) {
-            sqlSelect = "INSERT INTO rc_UserGroups(groupID, userID) VALUES (@0, @1)";
-            db.Execute( sqlSelect, groupID, data.userID );
-
+            @Html.Raw("<p>The user you want to invite is already on the website, you can <a href=\"search?id="+@groupID+"\">add that user to the group</a></p>")
         } else {
             // Initialize WebMail helper
             WebMail.SmtpServer = /*"smtp-mail.outlook.com";*/ "smtp.live.com";
@@ -40,7 +38,7 @@
             while ( true ) {
                 requestID = random.Next();
 
-                foreach ( var item in data ) {
+                foreach ( var item in reqData ) {
                         if ( item.id == requestID ) {
                             found = true;
                             break;

@@ -7,7 +7,7 @@
         Response.Redirect( "~/?ReturnURL=" + pageName );
 
     }
-    var user = ( int ) Session["userID"];
+    var user = ( int ) Session["userId"];
     var name = string.Empty;
 
     var groupId = Request["groupId"];
@@ -153,7 +153,7 @@
                                 <td>
                                     
                                         <form method="post">
-                                            <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19"/>
+                                            <input type="image" src="~/rcLayouts/default/images/download.png" name="image" value="@item.fileID" width="19" height="19" style="outline: none"/>
                                         </form>
 @*
     <a href="javascript:void(0);" onclick="document.execCommand('SaveAs', true, '@rcFunctions.getdownloadPath(item.fileID)')"><img src="~/rcLayouts/default/images/download.png" height="18" width="18" /></a>

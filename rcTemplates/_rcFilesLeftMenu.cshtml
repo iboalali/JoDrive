@@ -2,6 +2,7 @@
    var userID = (int) Session["userID"];
    var groupId = Request["groupId"];
    bool owner;
+   var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
    var db = Database.Open( "GP" );
    var sqlSelect = "Select * From rc_groups Where groupID= @0";
@@ -62,8 +63,8 @@
         <ul>
             @if (@owner)
             {
-                @if ( pageName == ("files?id=" + groupId.ToString()) ) { <li class=""><a href='~/groups'><span>< Return</span></a></li> }
-                else { <li class=""><a href='~/files?id=@groupId'><span>< Return</span></a></li> }
+                if ( pageName == ("files?groupId=" + groupId.ToString()) ) { <li class=""><a href='~/groups'><span>< Return</span></a></li> }
+                else { <li class=""><a href='~/files?groupId=@groupId'><span>< Return</span></a></li> }
                 <li><a href='~/uploadfiles?groupId=@groupId'><span>Upload Files</span></a></li>
                 <li><a href="~/deletefiles?groupId=@groupId"><span>Delete Files</span></a></li>
                 <li><a href='~/renamefiles?groupId=@groupId'><span>Rename Files</span></a></li>
@@ -71,7 +72,7 @@
                 <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
                 <li>
                     <form method="post">
-                        <button class='last' style="width: 100%" name="button" type="submit" value="delete" onclick="return confirm('Are you sure you want to delete this group and all it\'s data?')">Remove Group</button>
+                        <button class='last' style="width: 100%;outline: none" name="button" type="submit" value="delete" onclick="return confirm('Are you sure you want to delete this group and all it\'s data?')">Remove Group</button>
                     </form>
                 </li>
             }
@@ -80,7 +81,7 @@
                 <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
                 <li>
                     <form method="post">
-                        <button class='last' style="width: 100%" name="button" type="submit" value="leave" onclick="return confirm('Are you sure you want to leave this group?')">Leave Group</button>
+                        <button class='last' style="width: 100%;outline: none" name="button" type="submit" value="leave" onclick="return confirm('Are you sure you want to leave this group?')">Leave Group</button>
                     </form>
                 </li>
             }

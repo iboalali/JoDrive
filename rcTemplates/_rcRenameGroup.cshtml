@@ -17,7 +17,7 @@
         {
             db.Execute(sqlUp, newName, groupId);
             errMSG = "<b>Thank You - changes saved !</b>";
-            Response.Redirect("groups");
+            Response.Redirect( "files?groupId=" + groupId.ToString() );
         }
         catch (Exception ex)
         {
