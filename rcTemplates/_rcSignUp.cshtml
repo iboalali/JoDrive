@@ -75,7 +75,7 @@
 
 
                 sqlSelect = "INSERT INTO rc_Confirmation(confID, userID, firstName, lastName, email, pwd, date) VALUES(@0, @1, @2, @3, @4, @5, @6)";
-                db.Execute( sqlSelect, confID, userID, fn, ln, em, up, DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() );
+                db.Execute( sqlSelect, confID, userID, fn, ln, em, up, String.Format(System.Globalization.DateTimeFormatInfo.InvariantInfo, "{0:G}", DateTime.Now ) );
 
                 // Initialize WebMail helper
                 WebMail.SmtpServer = /*"smtp-mail.outlook.com";*/ "smtp.live.com";

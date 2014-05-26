@@ -1,0 +1,77 @@
+﻿@{
+    
+    
+    
+    var name = "";
+
+    var db = Database.Open( "GP" );
+    var sqlSelect1 = "Select * From rc_Messages Where receiverID=@0";
+    var data1 = db.Query(sqlSelect1, (int) Session["userID"]);
+    
+    if (IsPost)
+    {
+        var msgID = Request.Form["image"];
+         if (!msgID.IsEmpty())
+         {
+            var sqldelete = "Delete From rc_Messages Where msgID= @0";
+            db.Execute(sqldelete, msgID);
+            Response.Redirect(Request.RawUrl);
+         }
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <title></title>
+    </head>
+    <body>
+     
+
+       @if ( data1 != null ) 
+       {
+           <div class="table" >
+           <table>
+
+               <colgroup>
+                 <col span="1" style="width: 70%;">
+                 <col span="1" style="width: 25%;">
+                 <col span="1" style="width: 5%;">
+              </colgroup>
+               
+           @foreach ( var item in data1 ) 
+           {
+               {
+                   var senderID = item.senderID;
+                   var sqlSelect2 = "Select * From rc_UserLogin Where userID=@0";
+                   var data2 = db.QuerySingle(sqlSelect2, senderID);
+                   name = data2.firstName + " " + data2.lastName; 
+               }
+                   <tr style="font-size:x-small">
+                       <td style=" border-left:1px solid #d7d7d7; border-left-width: thick; border-left-color: #96C4E3; border-bottom:0px; height:5px;"> @name </td>
+                       <td style="text-align: right; height:5px;"> @item.dateSent </td>
+                       <td style="height:5px">
+                           <form method="post">
+                               <input type="image" src="~/rcLayouts/default/images/delete.png" name="image" value="@item.msgID" width="10" height="10" onclick="return confirm('Are you sure you want to delete ?')"/>
+                           </form>
+                       </td>
+                   </tr>
+                   <tr>
+                        <td colspan="3" style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">@item.messageBody</td>
+                   </tr>  
+           }
+            </table>
+          </div> 
+        }
+    </body>
+</html>
+
+
+
+
+

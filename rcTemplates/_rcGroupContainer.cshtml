@@ -46,8 +46,20 @@
                 </tr>
                 @foreach ( var item in data ) {
                     <tr>
+                        @{
+                           string groupName = string.Empty;
+                           if(item.groupName.Length >= 47)
+                           {
+                               groupName = item.groupName.Substring(0, 40) + "...";
+
+                           }else{
+                               groupName = item.groupName;
+
+                           }
+
+                       }
                         <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
-                            <a href="files?id=@item.groupID">@item.groupName</a>
+                            <a href="files?id=@item.groupID">@groupName</a>
                         </td>
                         <td>
                             @{

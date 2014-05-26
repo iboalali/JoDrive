@@ -1,0 +1,52 @@
+﻿@{
+    var errMSG = "";
+    var newName = "";
+    var groupId = Request["groupId"];
+
+    var db = Database.Open( "GP" );
+    var sqlSelect = "Select * From rc_groups Where groupID=@0";
+    var data = db.Query(sqlSelect, groupId);
+
+    Validation.RequireField("newName","Enter new file name");
+
+    newName = Request["newName"];
+
+    if (IsPost && Validation.IsValid()){
+        var sqlUp = "Update rc_groups set groupName=@0 where groupID=@1";
+        try
+        {
+            db.Execute(sqlUp, newName, groupId);
+            errMSG = "<b>Thank You - changes saved !</b>";
+            Response.Redirect("groups");
+        }
+        catch (Exception ex)
+        {
+            errMSG = ex.Message.ToString();
+        }
+    }
+}
+
+<form method="post" action="">
+@if (data != null)
+{
+foreach ( var item in data ) 
+ {
+     <fieldset>
+        <ol>
+            <li>
+                <label for="oldName">Current group name:</label>
+                <p>@item.groupName</p>
+                </li>
+                <li>
+                <label for="newName">New group name:</label>
+                <input type="text" name="newName" id="newName" value="@newName" @Validation.For("newName") />
+                    @Html.ValidationMessage("newName")
+            </li>
+        </ol>
+          <p class="form-actions">
+            <input type="submit" value="Change" title="Change" />
+        </p>
+    </fieldset>
+}
+}
+</form>

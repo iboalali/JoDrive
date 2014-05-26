@@ -1,0 +1,98 @@
+﻿@{
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+
+    }
+    
+    var db = Database.Open( "GP" );
+    var sqlSelect = "Select * From rc_groups Where ownerID = @0";
+    var data = db.Query(sqlSelect, Session["userID"]);
+
+    if (IsPost)
+    {
+        var groupId = Request.Form["image"];
+         if (!groupId.IsEmpty())
+         {
+            var sqldelete1 = "Delete From rc_groups Where groupID= @0";
+            db.Execute(sqldelete1, groupId);
+            var sqldelete2 = "Delete From rc_Files Where groupID= @0";
+            db.Execute(sqldelete2, groupId);
+            var sqldelete3 = "Delete From rc_UserGroups Where groupID= @0";
+            db.Execute(sqldelete3, groupId);
+             
+            string path = Server.MapPath("~/uploadedFiles/" + groupId.ToString() + "/");            
+            Directory.Delete(path, true);
+            Response.Redirect( Request.RawUrl );
+
+         }
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <title></title>
+    </head>
+    <body>
+        
+        @if ( data != null ) 
+       {
+           <div class="table" >
+           <table>
+
+               <colgroup>
+                 <col span="1" style="width: 45%;">
+                 <col span="1" style="width: 30%;">
+                 <col span="1" style="width: 25%;">
+                 <col span="1" style="width: 5%;">
+              </colgroup>
+                   <tr>
+                       <th style="border-left: none"> GROUP NAME </th>
+                       <th> Number of Files  </th>
+                       <th> MODIFIED </th>
+                       <th style="border-left: none"> </th>
+                   </tr>
+           @foreach ( var item in data ) 
+           {
+                   <tr>
+                       @{
+                           string groupName = string.Empty;
+                           if(item.groupName.Length >= 47)
+                           {
+                               groupName = item.groupName.Substring(0, 40) + "...";
+
+                           }else{
+                               groupName = item.groupName;
+
+                           }
+
+                       }
+
+                       <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">@groupName</td>
+                       @{
+                           sqlSelect = "SELECT * FROM rc_Files WHERE groupID=@0";
+                           var files_Data = db.Query(sqlSelect, item.groupID);
+                           
+                       }
+                       
+                       <td> @files_Data.Count </td>
+                       <td> @item.date </td>
+                       <td>
+                           <form method="post">
+                               <input type="image" src="~/rcLayouts/default/images/delete.png" name="image" value="@item.groupID" width="18" height="18" onclick="return confirm('Are you sure you want to delete this group and all it\'s data?')"/>
+                           </form>
+                       </td>
+                   </tr>  
+           }
+            </table>
+          </div> 
+        }      
+    </body>
+</html>

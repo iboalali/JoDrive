@@ -1,11 +1,20 @@
 ﻿@{
+    var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+    if ( Session["userID"] == null ) {
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+
+    }
     var groupId = Request["id"];
 
    var db = Database.Open( "GP" );
    var sqlSelect = "Select * From rc_groups Where groupID= @0";
    var data = db.QuerySingle( sqlSelect, groupId );
 
-
+   if(data == null)
+   {
+       Response.Redirect("~/groups");
+   }
 
 }
 
@@ -23,11 +32,13 @@
 <body>
     <div id='cssmenu' style="width: 100%">
         <ul>
+            @if ( pageName == ("files?id=" + groupId.ToString()) ) { <li class=""><a href='~/groups'><span>< Return</span></a></li> }
+            else { <li class=""><a href='~/files?id=@groupId'><span>< Return</span></a></li> }
             <li><a href='~/uploadfiles?id=@groupId'><span>Upload Files</span></a></li>
             <li><a href="~/deletefiles?id=@groupId"><span>Delete Files</span></a></li>
-            <li><a href='~/renamefiles?id=@groupId'><span>Remane Files</span></a></li>
+            <li><a href='~/renamefiles?id=@groupId'><span>Rename Files</span></a></li>
             <li><a href='~/viewmembers?id=@groupId'><span>View Members</span></a></li>
-            <li><a href='~/removegroup?id=@groupId'><span>Remane Group</span></a></li>
+            <li><a href='~/removegroup?id=@groupId'><span>Rename Group</span></a></li>
             <li class='last'><a href='~/leavegroup?id=@groupId'> @if ( data.ownerID == ( int ) Session["userID"] ) { <span>Delete Group</span> } else { <span>Leave Group</span> } </a></li>
         </ul>
     </div>

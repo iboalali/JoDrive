@@ -8,18 +8,20 @@
     }
 
     var groupId = Request["id"];
+    var user = ( int ) Session["userID"];
+    string name = ( string ) Session["name"];
+    var db = Database.Open( "GP" );
+    var sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
+    var g_data = db.QuerySingle( sqlSelect, groupId );
 
     var fileName = "";
     if ( IsPost ) {
         var fileSavePath = "";
         var uploadedFile = Request.Files[0];
-        fileName = Path.GetFileName(uploadedFile.FileName);
-        fileSavePath = Server.MapPath("~/UploadedFiles/" + groupId.ToString() + "/" + fileName);
-        uploadedFile.SaveAs(fileSavePath);
+        fileName = Path.GetFileName( uploadedFile.FileName );
 
-        var db = Database.Open( "GP" );
-        var sqlSelect = "SELECT * FROM rc_Files";
-        var data = db.Query(sqlSelect);
+        sqlSelect = "SELECT * FROM rc_Files";
+        var data = db.Query( sqlSelect );
 
         int fileID;
         Random random = new Random();
@@ -35,9 +37,14 @@
             break;
         }
 
+        fileSavePath = Server.MapPath( "~/UploadedFiles/" + groupId.ToString() + "/" + fileID );
+        uploadedFile.SaveAs( fileSavePath );
+
         sqlSelect = "INSERT INTO rc_Files(fileID, fileName, filePath, groupID, date, currentOwner) VALUES (@0, @1, @2, @3, @4, @5)";
         db.Execute( sqlSelect, fileID, fileName, fileSavePath, groupId,
-                   DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString(), ( int ) Session["userID"] );
+                   DateTime.Now
+            //String.Format(System.Globalization.DateTimeFormatInfo.InvariantInfo, "{0:G}", DateTime.Now )
+                   , ( int ) Session["userID"] );
 
     }
 
@@ -65,49 +72,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Upload File(s)</title>
+    <title></title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.js"></script>
+    <link type="text/css" rel="Stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/black-tie/jquery-ui.css" />
+
 </head>
 <body>
     <form id="myForm" method="post"
           enctype="multipart/form-data"
           action="">
-<div>
-            <h1>Upload File(s)</h1>
-                    
-    <div class="file-upload" id="file-upload-0">
-            <div>
-                <p>
-                <input name="fileUpload" type="file">
-                </p>
-                
+
+        <p style="padding-top: 1em">
+            <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+            <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+            <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+        </p>
+
+        <div style="padding-left: 1em">
+            <h2>Upload File</h2>
+
+            <div class="file-upload" id="file-upload-0" style="padding-top: 0.5em">
+                <div>
+                    <p>
+                        <input name="fileUpload" type="file">
+                    </p>
+
+                </div>
             </div>
-    </div>
 
-        <div class="file-upload-buttons">
-            <input type="submit" value="Upload"> <span style="padding-left: 1em"><a href="~/files?id=@groupId">or return to the group</a></span>
+            <div class="file-upload-buttons">
+                <input type="submit" value="Upload"> <span style="padding-left: 1em"><a href="~/files?id=@groupId">or return to the group</a></span>
+            </div>
+
+            @if ( IsPost ) {
+                <p style="padding-top: 0.5em">File uploaded!</p><br>
+            }
         </div>
-        
-    @if (IsPost) {
-            <span>File uploaded!</span><br>
-}
-        </div>      
 
 
 
 
-@*  
-        <div>
-            <h1>Upload File(s)</h1>
-            @FileUpload.GetHtml()
-        initialNumberOfFiles:1,
-        allowMoreFilesToBeAdded:false,
-        includeFormTag:true,
-        uploadText:"Upload")
-        @if (IsPost) {
-            <span>File uploaded!</span><br/>
-        }
-        </div>
-    *@
+        @*
+            <div>
+                <h1>Upload File(s)</h1>
+                @FileUpload.GetHtml()
+            initialNumberOfFiles:1,
+            allowMoreFilesToBeAdded:false,
+            includeFormTag:true,
+            uploadText:"Upload")
+            @if (IsPost) {
+                <span>File uploaded!</span><br/>
+            }
+            </div>
+        *@
     </form>
 </body>
 </html>
