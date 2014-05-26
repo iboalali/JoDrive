@@ -15,8 +15,8 @@
     var sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
     var g_data = db.QuerySingle( sqlSelect, groupID );
 
-    sqlSelect = "SELECT * FROM rc_UserLogin WHERE groupID=@0";
-    var user_data = db.QuerySingle( sqlSelect, groupID );
+    sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID=@0";
+    var user_data = db.QuerySingle( sqlSelect, g_data.ownerID );
     var name = user_data.firstName + " " + user_data.lastName;
     
     List<int> usersInGroup = new List<int>();
