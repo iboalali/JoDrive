@@ -5,28 +5,23 @@
         Response.Redirect( "~/?ReturnURL=" + pageName );
     }
 
-    int groupID = int.Parse( Request["id"] );
+    int groupID = int.Parse( Request["groupID"] );
     var user = ( int ) Session["userID"];
     var name = ( string ) Session["name"];
     Validation.Add( "email", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
 
     var userMail = Request["email"];
     var db = Database.Open( "GP" );
+
     var sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
     var g_data = db.QuerySingle( sqlSelect, groupID );
-
-
     if ( IsPost ) {
         var em = Request["email"];
-        sqlSelect = "SELECT rcUser FROM rc_UserLogin WHERE email=@0";
+        sqlSelect = "SELECT userID FROM rc_UserLogin WHERE email=@0";
         var data = db.QuerySingle( sqlSelect, em );
 
-        
-
         if ( data != null ) {
-            sqlSelect = "INSERT INTO rc_UserGroups(groupID, userName) VALUES (@0, @1)";
-            db.Execute( sqlSelect, groupID, data.rcUser );
-
+            @Html.Raw("<p>The user you want to invite is already on the website, you can <a href=\"search?id="+@groupID+"\">add that user to the group</a></p>")
         } else {
             // Initialize WebMail helper
             WebMail.SmtpServer = /*"smtp-mail.outlook.com";*/ "smtp.live.com";
@@ -59,35 +54,32 @@
             }
 
             sqlSelect = "INSERT INTO rc_Requests(id, groupID, date) VALUES(@0, @1, @2)";
-            db.Execute( sqlSelect, requestID, groupID, String.Format(System.Globalization.DateTimeFormatInfo.InvariantInfo, "{0:G}", DateTime.Now ) );
+            db.Execute( sqlSelect, requestID, groupID, DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() );
 
 
             sqlSelect = "SELECT * FROM rc_groups WHERE groupID=@0";
             var groupData = db.QuerySingle( sqlSelect, groupID );
-            var link = "http://localhost:12633/signup?reqID=" + requestID;
+
+            sqlSelect = "SELECT * FROM rc_UserLogin WHERE userID = @0";
+            var userData = db.QuerySingle(sqlSelect, groupData.ownerID);
+            
+            var pageName = Request.Url.ToString().Substring(0, Request.Url.ToString().LastIndexOf('/'));
+
+            var link = pageName + "/signup?reqID=" + requestID;
 
             // Send email
             WebMail.Send( to: userMail,
-            subject: "Come and work on a project on JoDrive",
-            body: groupData.owner + " asks you to join his group to work on his project with him\n"
-            + "Project Name: " + groupData.groupName + "\n"
-            + "Project Description: " + groupData.description + "\n"
-            + "Date Created: " + groupData.date + "\n"
-            + "\n\n"
-            + "click on this link to sign up for a free JoDrive account and start working" + "\n"
-            + "\n\t" + "<a href=\"" + link + "\">" + link + "</a> \n"
-            + "\nThis invitation request will expire after 1 month" + "\n\n\n\n\n\nJoDrive" );
-
-
-
-
+            subject: "Invitation to Join JoDrive From " + userData.firstName + " " + userData.lastName,
+            body: 
+            "<h1>JoDrive</h1>" +
+            "<p>You have received an invitation to collaborate on a project with " + userData.firstName + " " + userData.lastName 
+            + " on JoDrive.</p>" 
+            +"<p>Group you are invited to join: " + groupData.groupName + "</br>"
+            + "Description: " + groupData.description + "</p>"
+            +"<p>Click the following link to signup and join the group: </br>"
+            +"<a href=\""  + link + "\">" + link + "</a></p>");
         }
-
-
-
     }
-
-
 }
 
 <!DOCTYPE html>
@@ -110,6 +102,7 @@
             <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
         </p>
     </fieldset>
+
     <fieldset>
         <form action="" method="post">
             <p>

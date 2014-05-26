@@ -59,7 +59,7 @@
 
                        }
                         <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
-                            <a href="files?id=@item.groupID">@groupName</a>
+                            <a href="files?groupId=@item.groupID">@groupName</a>
                         </td>
                         <td>
                             @{
@@ -72,7 +72,7 @@
                         <td>@item.date</td>
 
                         @if ( item.ownerID == ( int ) Session["userID"] ) {
-                            <td><img src="~/rcLayouts/default/images/admin.png" alt="Admin" height="19" width="19"></td>
+                            <td><img src="~/rcLayouts/default/images/admin.png" title="admin" alt="Admin" height="19" width="19"></td>
 
                         } else {
                             <td></td>

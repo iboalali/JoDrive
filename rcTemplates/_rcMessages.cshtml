@@ -1,5 +1,10 @@
 ﻿@{
-    
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+
+    }
     
     
     var name = "";
@@ -57,7 +62,7 @@
                        <td style="text-align: right; height:5px;"> @item.dateSent </td>
                        <td style="height:5px">
                            <form method="post">
-                               <input type="image" src="~/rcLayouts/default/images/delete.png" name="image" value="@item.msgID" width="10" height="10" onclick="return confirm('Are you sure you want to delete ?')"/>
+                               <input type="image" src="~/rcLayouts/default/images/delete.png" name="image" value="@item.msgID" width="10" height="10" onclick="return confirm('Are you sure you want to delete this message?')"/>
                            </form>
                        </td>
                    </tr>
