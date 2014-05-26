@@ -36,8 +36,10 @@
 
 
     if ( IsPost ) {
-        var fileId = int.Parse( Request.Form["image"] );
+        var fileId = int.Parse( Request.Form["request"] );
 
+        var sqlInsert = "INSERT INTO rc_RequestedPermissions(fileID, userID, groupID) VALUES(@0, @1, @2)";
+        db.Execute(sqlInsert, fileId, (int)Session["UserID"], groupId);
         // put the request here in the database nad don't leave this site
         
         
@@ -110,9 +112,16 @@
                                 <td> @item.date </td>
                                 <td>
 
+                                    @{
+                                        sqlSelect = "SELECT * FROM rc_RequestedPermissions WHERE groupID=@0 AND userID=@1 AND fileID=@2";
+                                        var request = db.Query(sqlSelect, groupId, user, Request.Form["request"]);    
+
+                                    }
+                                    
+                                    @if(request != null){
                                     <form method="post">
-                                        <input type="image" src="~/rcLayouts/default/images/lock.png" name="image" value="@item.fileID" width="19" height="19" style="outline: none" />
-                                    </form>
+                                        <input type="image" src="~/rcLayouts/default/images/lock.png" title="Request Permission" name="request" value="@item.fileID" width="19" height="19" style="outline: none" />
+                                    </form>}
                                     @*
                                         <a href="javascript:void(0);" onclick="document.execCommand('SaveAs', true, '@rcFunctions.getdownloadPath(item.fileID)')"><img src="~/rcLayouts/default/images/download.png" height="18" width="18" /></a>
 
