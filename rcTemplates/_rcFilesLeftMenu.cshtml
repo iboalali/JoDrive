@@ -78,6 +78,8 @@
             }
             else
             {
+                if ( pageName == ("files?groupId=" + groupId.ToString()) ) { <li class=""><a href='~/groups'><span>< Return</span></a></li> }
+                else { <li class=""><a href='~/files?groupId=@groupId'><span>< Return</span></a></li> }
                 <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
                 <li><a href="~/requestpermission?groupId=@groupId">Request Permission</a></li>
                 <li>
