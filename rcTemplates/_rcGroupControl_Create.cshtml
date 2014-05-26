@@ -1,4 +1,4 @@
-@{
+﻿@{
     if ( Session["userID"] == null ) {
         var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
@@ -27,14 +27,14 @@
             s_groupID = random.Next();
 
             foreach ( var item in data ) {
-                        if ( item.groupID == s_groupID ) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if(found){
-                        continue;
-                    }
+                if ( item.groupID == s_groupID ) {
+                    found = true;
+                    break;
+                }
+            }
+            if ( found ) {
+                continue;
+            }
 
             break;
         }
@@ -46,10 +46,10 @@
         //            + "WHERE groupName=@0 and owner=@1 and groupID=@2 and description=@3";
 
         db.Execute( sqlSelect, s_groupName, userID, s_groupID, s_groupDescription,
-        //DateTime.Now);
-        String.Format(System.Globalization.DateTimeFormatInfo.InvariantInfo, "{0:G}", DateTime.Now ) );
+            //DateTime.Now);
+        String.Format( System.Globalization.DateTimeFormatInfo.InvariantInfo, "{0:G}", DateTime.Now ) );
 
-        //DateTime.Now.Month + "/" + DateTime.Now.Day + "/" + DateTime.Now.Year + " " 
+        //DateTime.Now.Month + "/" + DateTime.Now.Day + "/" + DateTime.Now.Year + " "
         //+  DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + " ");
 
         sqlSelect = "INSERT INTO rc_UserGroups(groupID, userID)"
