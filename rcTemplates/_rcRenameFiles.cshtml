@@ -6,7 +6,7 @@
 
     }
     var user = ( int ) Session["userID"];
-    var name = ( string ) Session["name"];
+
 
     var groupId = Request["groupId"];
 
@@ -16,6 +16,10 @@
 
     sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
     var g_data = db.QuerySingle( sqlSelect, groupId );
+
+    sqlSelect = "SELECT * FROM rc_UserLogin WHERE groupID=@0";
+    var user_data = db.QuerySingle( sqlSelect, groupId );
+    var name = user_data.firstName + " " + user_data.lastName;
 
     if ( IsPost ) {
         var fileId = Request.Form["image"];

@@ -15,7 +15,11 @@
 
     sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
     var g_data = db.QuerySingle( sqlSelect, groupID );
-    string name = ( string ) Session["name"];
+
+
+    sqlSelect = "SELECT * FROM rc_UserLogin WHERE groupID=@0";
+    var user_data = db.QuerySingle( sqlSelect, groupID );
+    var name = user_data.firstName + " " + user_data.lastName;
     
     if ( data.Count() == 0 ) {
         Response.Redirect("~/files?groupId=" + groupID.ToString());

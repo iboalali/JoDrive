@@ -7,7 +7,6 @@
 
     int groupID = int.Parse( Request["id"] );
     var user = ( int ) Session["userID"];
-    var name = ( string ) Session["name"];
     Validation.Add( "email", Validator.Regex( @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address" ) );
 
     var userMail = Request["email"];
@@ -15,11 +14,13 @@
     var sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
     var g_data = db.QuerySingle( sqlSelect, groupID );
 
+    sqlSelect = "SELECT rcUser FROM rc_UserLogin WHERE email=@0";
+    var em = Request["email"];
+    var data = db.QuerySingle( sqlSelect, em );
+    var name = ( string ) Session["name"];
 
     if ( IsPost ) {
-        var em = Request["email"];
-        sqlSelect = "SELECT rcUser FROM rc_UserLogin WHERE email=@0";
-        var data = db.QuerySingle( sqlSelect, em );
+        
 
         
 

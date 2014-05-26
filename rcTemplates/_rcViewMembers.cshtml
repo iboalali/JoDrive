@@ -7,7 +7,6 @@
 
     int groupID = int.Parse( Request["groupId"] );
     var user = ( int ) Session["userID"];
-    var name = ( string ) Session["name"];
     
     
     var db = Database.Open("GP");
@@ -16,6 +15,10 @@
 
     sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
     var g_data = db.QuerySingle( sqlSelect, groupID );
+    
+    sqlSelect = "SELECT * FROM rc_UserLogin WHERE groupID=@0";
+    var user_data = db.QuerySingle( sqlSelect, groupID );
+    var name = user_data.firstName + " " + user_data.lastName;
 
     sqlSelect = "SELECT ownerID FROM rc_groups WHERE groupID = @0";
     var groupAdmin = db.QuerySingle(sqlSelect, groupID);
