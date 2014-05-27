@@ -43,14 +43,12 @@
 </head>
 <body>
 
-    <fieldset style="background-color: #E5E5E5; ">
+    <fieldset style="background-color: #F7F7F7; border: none; ">
 
-        <p style="padding-top: 1em">
-            <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
-            <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
-            <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
-        </p>
-    </fieldset>
+                        <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+                        <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+                        <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+                </fieldset>
 
 
     @if ( data != null ) {
