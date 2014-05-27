@@ -39,6 +39,10 @@
             File.Delete( data.filePath );
             //fileSavePath = Server.MapPath( "~/UploadedFiles/" + groupId.ToString() + "/" + fileId );
             uploadedFile.SaveAs( data.filePath );
+
+            sqlSelect = "DELETE FROM rc_GrantedPermissions WHERE fileID=@0";
+            db.Execute(sqlSelect, fileId);
+
             Response.Redirect("~/uploadrequestedfile?groupId="+groupId.ToString());
         }
 
