@@ -34,10 +34,35 @@
     var user_data = db.QuerySingle( sqlSelect, g_data.ownerID );
     name = user_data.firstName + " " + user_data.lastName;
 
-
+    
     if ( IsPost ) {
-        var fileId = int.Parse( Request.Form["image"] );
+        var fileId = int.Parse( Request.Form["request"] );
 
+        //generate a unique requestID
+        sqlSelect = "SELECT * FROM rc_RequestedPermissions";
+                var ids = db.Query( sqlSelect );
+
+                int generatedID = 0;
+                Random random = new Random();
+                bool found = false;
+                while ( true ) {
+                    generatedID = random.Next();
+
+                    foreach ( var item in ids ) {
+                        if ( item.requestID == generatedID ) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(found){
+                        continue;
+                    }
+
+                    break;
+                }
+
+        var sqlInsert = "INSERT INTO rc_RequestedPermissions(fileID, userID, groupID, requestID) VALUES(@0, @1, @2, @3)";
+        db.Execute(sqlInsert, fileId, (int)Session["UserID"], groupId, generatedID);
         // put the request here in the database nad don't leave this site
         
         
@@ -109,10 +134,18 @@
                                 <td> @name </td>
                                 <td> @item.date </td>
                                 <td>
+                                    @{
+                                        sqlSelect = "SELECT * FROM rc_GrantedPermissions WHERE holderID=@0 AND fileID=@1";
+                                        var dataInGranted = db.QuerySingle(sqlSelect, user, item.fileID);  
 
+                                        sqlSelect = "SELECT * FROM rc_RequestedPermissions WHERE userID=@0 AND fileID=@1";
+                                        var dataInRequested = db.QuerySingle(sqlSelect, user, item.fileID);
+                                    }
+                                    
+                                    @if(dataInGranted == null && dataInRequested == null){
                                     <form method="post">
-                                        <input type="image" src="~/rcLayouts/default/images/lock.png" name="image" value="@item.fileID" width="19" height="19" style="outline: none" />
-                                    </form>
+                                        <input type="image" src="~/rcLayouts/default/images/lock.png" title="Request Permission" name="request" value="@item.fileID" width="19" height="19" style="outline: none" />
+                                    </form>}
                                     @*
                                         <a href="javascript:void(0);" onclick="document.execCommand('SaveAs', true, '@rcFunctions.getdownloadPath(item.fileID)')"><img src="~/rcLayouts/default/images/download.png" height="18" width="18" /></a>
 
