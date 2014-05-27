@@ -52,6 +52,8 @@
 
 
     @if ( data != null ) {
+        if(data.Count() != 0){
+        
         <div class="table">
             <table>
 
@@ -94,9 +96,14 @@
 
                         </td>
                     </tr>
-                }
+                }    
             </table>
         </div>
+    }else{
+        <p style="padding-left: 1em">You don't have any files, click <a href='~/uploadfiles?groupId=@groupId'>here</a> to start uploading</p>
+
     }
+    }
+
 </body>
 </html>

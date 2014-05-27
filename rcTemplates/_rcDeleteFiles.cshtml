@@ -31,10 +31,13 @@
             sqlSelect = "SELECT * FROM rc_Files WHERE fileID = @0";
             var file_data = db.QuerySingle( sqlSelect, fileId );
             
-            
-            
             var sqldelete = "Delete From rc_Files Where fileID= @0";
             db.Execute( sqldelete, ( string ) fileId );
+            sqldelete = "Delete From rc_RequestedPermissions Where fileID= @0";
+            db.Execute( sqldelete, fileId );
+            sqldelete = "Delete From rc_GrantedPermissions Where holderID= @0";
+            db.Execute( sqldelete, fileId );
+
             File.Delete( file_data.filePath );
             Response.Redirect( Request.RawUrl );
         }

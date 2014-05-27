@@ -137,20 +137,25 @@
         <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
     </head>
     <body>
-        <fieldset style="background-color: #F7F7F7; border: none; ">
+
+
+<fieldset style="background-color: #F7F7F7; border: none; ">
 
                         <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
-                        <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+                        <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == userID ) { <text>You</text> } else { @name }</span>
                         <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
                 </fieldset>
 
+        <fieldset>
         <p>You can search for users with their first name, last name, or email address</p>
         <form method="post"><label for="searchString">Search</label>
         <input type="text" name="searchString">
         <input type="submit" name="search" value="Search"></form>
-        </br>
+            </fieldset>
 
-        @if(isResultFound && (results.Count() != 0)){
+        @if(results != null){
+
+        if(isResultFound && (results.Count() != 0)){
             
             <div class="table">
             <table>
@@ -181,11 +186,12 @@
             </table>
         </div>
                 }
-        @if(hasRunSearch && results.Count() == 0){
+        if(hasRunSearch && results.Count() == 0){
             <p>Your search returned 0 results!<br>
             Make sure you entered correct search data, or <a href="~/invite?groupId=@groupID">invite a new user to the website</a>.
             </p>
 
+        }
         }
 
     </body>

@@ -21,7 +21,11 @@
             db.Execute(sqldelete2, groupId);
             var sqldelete3 = "Delete From rc_UserGroups Where groupID= @0";
             db.Execute(sqldelete3, groupId);
-             
+            sqldelete1 = "DELETE FROM rc_RequestedPermissions WHERE groupID=@0";
+            db.Execute(sqldelete1, groupId);
+            sqldelete1 = "DELETE FROM rc_GrantedPermissions WHERE groupID=@0";
+            db.Execute(sqldelete1, groupId);
+            
             string path = Server.MapPath("~/uploadedFiles/" + groupId.ToString() + "/");            
             Directory.Delete(path, true);
             Response.Redirect( Request.RawUrl );

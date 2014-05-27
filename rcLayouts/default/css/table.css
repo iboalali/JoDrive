@@ -10,6 +10,7 @@ width: 100%;
 
 
 th {
+    border-top: 1px solid #E4E4E4;
     border-left: 1px solid #E4E4E4;
     height: 19px;
     padding: 14px;
@@ -19,9 +20,10 @@ th {
     color: #000;
 }
 
-tr:not(:first-child):hover
-{
-  background-color: #F7F7F7;
+
+tr:hover td {
+    background-color: #F7F7F7;
+    text-decoration: none;
 }
 
 td
@@ -38,5 +40,16 @@ border-left: none;
 border-right: none;
 }
 
+td a
+{
+    display: block;
+}
 
+td.unread
+{
+    background-color: #F7F7F7;
+}
 
+td.focus {
+    background-color: #b6ff00;
+}

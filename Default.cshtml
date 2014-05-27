@@ -3,7 +3,7 @@
     
     //check what page is requested and load data from database
     var pageName = Context.GetRouteValue("rcPageName");
-    if (pageName == null){pageName = "home";}
+    if (pageName == null){pageName = "groups";}
 
     var db = Database.Open("GP"); 
     var selectQueryString = "SELECT pId, pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pBody, pBodyFile "

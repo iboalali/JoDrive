@@ -1,0 +1,77 @@
+﻿@{
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+    }
+    
+    int count = 0;
+    var userID = (int) Session["userID"];
+
+    var db = Database.Open("GP");
+    var sqlSelect1 = "Select userID From rc_UserGroups Where groupID In (Select groupID From rc_UserGroups where userID=@0)";
+    var data1 = db.Query(sqlSelect1, userID);
+
+    Queue<int> myQ = new Queue<int>();    
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+     <head>
+        <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.js"></script>
+    <script>
+        function ClearInput(box) {
+            document.getElementById(box).value = "";
+        }
+    </script>
+    <link type="text/css" rel="Stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/themes/black-tie/jquery-ui.css" />
+    <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
+    </head>
+    <body>
+        @if (data1 != null)
+        {
+            foreach (var item1 in data1)
+            {
+                if (item1.userID == userID)
+                {
+                    continue;
+                }
+                else
+                {
+                    if (myQ.Contains(item1.userID))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        myQ.Enqueue(item1.userID);
+                    }
+                }
+            }
+            count = myQ.Count;
+         }
+        
+            <h1>Members</h1>
+            <table class="table">
+              @for (int i = 0; i < count; i++)
+                {
+                    var ID = (int)myQ.Dequeue();
+                    var sqlSelect2 = "Select * From rc_UserLogin Where userID = @0";
+                    var data2 = db.QuerySingle(sqlSelect2, ID);
+                    var name = data2.firstName + " " + data2.lastName;
+
+                    <tr>
+                        <td>
+                            <a href="sendmessage?receiverId=@ID">@name</a>
+                        </td>
+                    </tr>
+                }
+                </table>        
+    </body>
+</html>

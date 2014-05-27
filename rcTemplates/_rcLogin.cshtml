@@ -1,7 +1,7 @@
 @{
 
     if ( Session["userID"] != null ) {
-        Response.Redirect( "~/home" );
+        Response.Redirect( "~/groups" );
 
     }
 
@@ -56,7 +56,7 @@
             //sqlSelect = "INSERT INTO rc_SessionInfo(userName) VALUES(@0)";
             //db.Execute( sqlSelect, un );
 
-            Response.Redirect( "~/home" );
+            Response.Redirect( "~/groups" );
 
             //}
 

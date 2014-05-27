@@ -1,0 +1,87 @@
+﻿@{
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+    }
+
+    var receiverrName = "";
+    var receiverId = Request["receiverId"];
+    //check if it from the list or not
+
+    var db = Database.Open("GP");
+    var sqlSelect1 = "SELECT * from rc_UserLogin WHERE userID=@0";
+    var user = db.QuerySingle( sqlSelect1, receiverId );
+
+    receiverrName = user.firstName + " " + user.lastName;
+
+    if (IsPost)
+    {
+        var messageBody = Request["messageBody"];
+
+        if ( user != null )
+        {
+            var receiverID = receiverId;
+            var senderID = (int) Session["userID"];
+            var date = DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString();
+            
+            var sqlSelect2 = "SELECT msgID FROM rc_messages";
+            var data = db.Query( sqlSelect2 );
+
+            int msgID;
+            Random random = new Random();
+            bool found = false;
+            while (true) 
+            {
+                msgID = random.Next();
+                foreach ( var item in data ) 
+                {
+                    if ( item.msgID == msgID )
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found)
+                {
+                    continue;
+                }
+                break;
+             }
+
+             var sqlInsert = "INSERT INTO rc_Messages (msgID, senderID, receiverID, date, messageBody) VALUES(@0, @1, @2, @3, @4)";
+             db.Execute(sqlInsert, msgID, senderID, receiverID, date, messageBody);
+             Response.Redirect(Request.RawUrl);
+        }
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+        <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+        <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
+        <title></title>
+    </head>
+    <body>
+       
+        </br></br></br>
+        <form method="post" action="" autocomplete="off">
+        <fieldset>
+            <div style="padding-left: 1em; padding-right: 1em">
+                <label for="receiver">Send to: @receiverrName</label>
+                <hr>
+                <textarea name="messageBody" cols="132" rows="7" style="resize:none; border:none; outline:none"></textarea>
+                <hr>
+                <input type="submit" name="btn" value="Send" title="Send" />
+   
+            </div>
+        </fieldset>
+        </form>
+        
+    </body>
+</html>

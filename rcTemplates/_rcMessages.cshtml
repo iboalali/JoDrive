@@ -3,24 +3,31 @@
         var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
 
         Response.Redirect( "~/?ReturnURL=" + pageName );
-
     }
-    
-    
-    var name = "";
 
+    var msg = "";
+    var name = "";
+    var userID = (int) Session["userID"];
+    
     var db = Database.Open( "GP" );
     var sqlSelect1 = "Select * From rc_Messages Where receiverID=@0";
-    var data1 = db.Query(sqlSelect1, (int) Session["userID"]);
-    
-    if (IsPost)
+    var data1 = db.Query(sqlSelect1, userID);
+
+     if (IsPost)
     {
-        var msgID = Request.Form["image"];
-         if (!msgID.IsEmpty())
+        var deletemsg = Request.Form["delete"];
+        var showmsg = Request.Form["readmsg"];
+         if (!deletemsg.IsEmpty())
          {
             var sqldelete = "Delete From rc_Messages Where msgID= @0";
-            db.Execute(sqldelete, msgID);
+            db.Execute(sqldelete, deletemsg);
             Response.Redirect(Request.RawUrl);
+         }
+         else if (!showmsg.IsEmpty())
+         {
+             var sqlSelect3 = "Select * From rc_Messages Where msgID=@0";
+             var data3 = db.QuerySingle(sqlSelect3, showmsg);
+             msg = (string) data3.messageBody;
          }
     }
 }
@@ -30,53 +37,92 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-         <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
-         <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
-         <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+        <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+        <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+        <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
+        <script>
+            $("#btt").click(function() {$("html, body").animate({ scrollTop: $(document).height() }, "fast");})
+            document.onload = function(){ $("html, body").animate({ scrollTop: $(document).height() }, "fast"); }
+
+            $("a[href='#bottom']").click(function() 
+            {
+                $("html, body").animate({ scrollTop: $(document).height() }, "fast");
+                return false;
+            });
+        </script>
         <title></title>
     </head>
     <body>
-     
 
-       @if ( data1 != null ) 
-       {
-           <div class="table" >
-           <table>
+    @if ( data1 != null )
+    { 
+        <div class="table" >
+          <table>
 
-               <colgroup>
-                 <col span="1" style="width: 70%;">
-                 <col span="1" style="width: 25%;">
-                 <col span="1" style="width: 5%;">
-              </colgroup>
+           <colgroup>
+               <col span="1" style="width: 50%;">
+               <col span="1" style="width: 15%;">
+               <col span="1" style="width: 25%;">
+               <col span="1" style="width: 5%;">
+               <col span="1" style="width: 5%;">
+           </colgroup>
+
+           <tr>
+               <th style="border-left: none; border-top: 1px solid #EDEDED"> MESSAGE </th>
+               <th> FROM </th>
+               <th> SEND TIME </th>
+               <th style="border-left: none"></th>
+               <th style="border-left: none"></th>
+           </tr>
                
            @foreach ( var item in data1 ) 
            {
-               {
-                   var senderID = item.senderID;
-                   var sqlSelect2 = "Select * From rc_UserLogin Where userID=@0";
-                   var data2 = db.QuerySingle(sqlSelect2, senderID);
-                   name = data2.firstName + " " + data2.lastName; 
-               }
-                   <tr style="font-size:x-small">
-                       <td style=" border-left:1px solid #d7d7d7; border-left-width: thick; border-left-color: #96C4E3; border-bottom:0px; height:5px;"> @name </td>
-                       <td style="text-align: right; height:5px;"> @item.dateSent </td>
-                       <td style="height:5px">
-                           <form method="post">
-                               <input type="image" src="~/rcLayouts/default/images/delete.png" name="image" value="@item.msgID" width="10" height="10" onclick="return confirm('Are you sure you want to delete this message?')"/>
-                           </form>
-                       </td>
-                   </tr>
-                   <tr>
-                        <td colspan="3" style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">@item.messageBody</td>
-                   </tr>  
+               var senderID = item.senderID;
+               var sqlSelect2 = "Select * From rc_UserLogin Where userID=@0";
+               var data2 = db.QuerySingle(sqlSelect2, senderID);
+               name = data2.firstName + " " + data2.lastName; 
+               
+               <tr>
+                   <td style="border-left:1px solid #d7d7d7; border-left-width: thick; border-left-color: #96C4E3;">
+                    @{
+                         string msgBody = string.Empty;
+                         if ( item.messageBody.Length >= 35 ) 
+                         {
+                             msgBody = item.messageBody.Substring( 0, 45 ) + "...";
+                         } 
+                         else 
+                         {
+                             msgBody = item.messageBody;
+                         }
+                    }
+                         @msgBody</td>
+                   <td> @name </td>
+                   <td> @item.date </td>
+                   <td>
+                       <form method="post">
+                           <a>
+                               <input id="btt" type="image" src="~/rcLayouts/default/images/readmsg.png" style="outline:none" name="readmsg" value="@item.msgID" width="18" height="18"/>
+                           </a>
+                       </form>
+                   </td>
+                   <td>
+                       <form method="post">
+                           <input type="image" src="~/rcLayouts/default/images/delete.png" style="outline:none" name="delete" value="@item.msgID" width="18" height="18" onclick="return confirm('Are you sure you want to delete ?')"/>
+                       </form>
+                   </td>
+               </tr>            
            }
-            </table>
-          </div> 
-        }
+        </table>
+      </div>
+
+            if (msg != string.Empty)
+            {
+                <div style="width:100%; height:150px; background-color:#F7F7F7; line-height:3em; overflow:auto; padding:5px;">
+                    @msg 
+                </div>
+            }
+            
+           } 
     </body>
 </html>
-
-
-
-
-
