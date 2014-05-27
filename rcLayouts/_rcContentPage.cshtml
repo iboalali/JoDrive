@@ -16,6 +16,28 @@
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/mvc/4.0/jquery.validate.unobtrusive.js"></script>
 
+    <script src="~/rcLayouts/default/js/ScrollSpy-yui-compressed.js"></script>
+    <script src="~/rcLayouts/default/js/ScrollSpy.js"></script>
+
+    <style>
+        #sidePanel {
+            position: fixed;
+            left: 3em;
+            top: 4.8em;
+            z-index: 1000;
+        }
+    </style>
+
+    <script>
+        var ss = new ScrollSpy({
+            mode: 'horizontal',
+            onTick: function (position, state, enters, leaves) {
+                $("sidePanel").style.left = -position.x + "px";
+            },
+            container: window
+        });
+    </script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -26,32 +48,32 @@
     @Html.Raw( App.siteAnalytics )
 </head>
 <body>
-    
-        <div class="navbar-wrapper">
-          <div class="container">
+
+    <div class="navbar-wrapper">
+        <div class="container">
 
 
             <div class="navbar navbar-inverse navbar-fixed-top" style="border-radius:0px; background-color:#24272C " role="navigation">
-              <div class="container">
-                <div class="navbar-header">
-                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                  </button>
-                  <a class="navbar-brand" Style="color: #ED1C24" href="/">@Html.Raw(@App.siteName)</a>
-                </div>
-                <div class="navbar-collapse collapse">
-                     @rcHelpers.SimpleMenu(className:"nav navbar-nav navbar-right",id:"rcSimpleMenu")
-                </div>
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" style="color: #ED1C24" href="/">@Html.Raw( @App.siteName )</a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        @rcHelpers.SimpleMenu( className: "nav navbar-nav navbar-right", id: "rcSimpleMenu" )
+                    </div>
 
-              </div>
+                </div>
             </div>
 
-          </div>
         </div>
-   
+    </div>
+
     <!-- Marketing messaging and featurettes
     ================================================== -->
     <!-- Wrap the rest of the page in another container to center all the content. -->
@@ -65,51 +87,51 @@
         *@
 
         <div class="row">
-            <div class="col-md-12" style="padding-top:5em" >
+            <div class="col-md-12" style="padding-top:5em">
 
             </div>
         </div>
 
-            <!-- START 2 columns layout - right sidebar-->
-            <div class="row">
-                <div class="col-md-3" style="padding-top:1.1em">
-                    
-                    @RenderSection( "rcRight", false )
+        <!-- START 2 columns layout - right sidebar-->
+        <div class="row">
+            <div class="col-md-3" style="padding-top:1.1em">
 
+                @RenderSection( "rcRight", false )
+
+            </div>
+
+            <div class="col-md-9">
+                @RenderSection( "rcLeft", false )
+
+
+            </div>
+        </div>
+
+        @RenderBody()
+
+
+        @RenderSection( "rcBottom", false )
+
+        <!-- FOOTER -->
+
+        <footer>
+            <!--<p class="pull-right"><a href="#">Back to top</a></p>-->
+            <div class="row" style="padding-top:10em">
+
+                <div class="col-md-3">
+                    <p style="margin-left: 2%; margin-top: -50px">&copy;  @DateTime.Now.Year @App.siteName  </p>
                 </div>
-
                 <div class="col-md-9">
-                    @RenderSection( "rcLeft", false )
+
 
 
                 </div>
+
             </div>
 
-            @RenderBody()
-            
+        </footer>
 
-            @RenderSection( "rcBottom", false )
-
-            <!-- FOOTER -->
-
-            <footer>
-                <!--<p class="pull-right"><a href="#">Back to top</a></p>-->
-                <div class="row" style="padding-top:10em">
-					
-                    <div class="col-md-3">
-                        <p style="margin-left: 2%; margin-top: -50px">&copy;  @DateTime.Now.Year @App.siteName  </p>
-                    </div>
-                    <div class="col-md-9">
-
-                        
-
-                    </div>
-
-                </div>
-
-            </footer>
-
-        </div>
+    </div>
     </div><!-- /.container -->
 </body>
 </html>
