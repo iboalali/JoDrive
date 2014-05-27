@@ -64,13 +64,14 @@
     <div id='cssmenu' style="width: 100%">
         <ul>
             @if ( @owner ) {
-                if ( pageName == ( "files?groupId=" + groupId.ToString() ) ) {
+                if ( pageName == ( "files?groupId=" + groupId.ToString() ) || pageName == ( "files?groupID=" + groupId.ToString() ) ) {
                     <li class=""><a href='~/groups'><span>< Return</span></a></li> } else {
                     <li class=""><a href='~/files?groupId=@groupId'><span>< Return</span></a></li> }
                     <li><a href='~/uploadfiles?groupId=@groupId'><span>Upload Files</span></a></li>
                     <li><a href="~/deletefiles?groupId=@groupId"><span>Delete Files</span></a></li>
                     <li><a href='~/renamefiles?groupId=@groupId'><span>Rename Files</span></a></li>
-                    <li><a href='~/permissions?groupId=@groupId'><span>View Permissions</span></a></li>
+                    <li><a href='~/permissions?groupId=@groupId'><span>View Requests</span></a></li>
+                    <li><a href='~/pullpermission?groupId=@groupId'><span>Pull Permissions</span></a></li>
                     <li><a href='~/renamegroup?groupId=@groupId'><span>Rename Group</span></a></li>
                     <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
                     <li>
@@ -84,6 +85,7 @@
                     <li class=""><a href='~/files?groupId=@groupId'><span>< Return</span></a></li> }
                     <li><a href='~/viewmembers?groupId=@groupId'><span>View Members</span></a></li>
                     <li><a href="~/requestpermission?groupId=@groupId">Request Permission</a></li>
+                    <li><a href="~/usercancelrequests?groupId=@groupId">Cancel Request</a></li>
                     <li><a href="~/uploadrequestedfile?groupId=@groupId">Upload Requested Files</a></li>
                     <li>
                         <form method="post">

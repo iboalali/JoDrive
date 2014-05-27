@@ -22,10 +22,8 @@
 
     if(IsPost)
     {
-        var reqID = Request.Form["grant"];
-        var canID = Request.Form["cancel"];
-
-        if(!reqID.IsEmpty()){
+        var reqID = Request.Form["cancel"];
+        /*
         //get info about the current request
         sqlSelect = "SELECT * FROM rc_RequestedPermissions WHERE requestID=@0";
         var currentRequest = db.QuerySingle(sqlSelect, reqID);
@@ -37,17 +35,13 @@
         //remove entry from the requests table
         var sqlDelete = "DELETE FROM rc_RequestedPermissions WHERE requestID=@0";
         db.Execute(sqlDelete, reqID);
-        }
-        if(!canID.IsEmpty()){
-            var sqlDelete= "DELETE FROM rc_RequestedPermissions WHERE requestID = @0";
-            db.Execute(sqlDelete, canID);
+        
+        */
+        var sqlDelete = "DELETE FROM rc_RequestedPermissions WHERE requestID=@0";
+        db.Execute(sqlDelete, reqID);
 
-
-
-        }
         //refresh page
         Response.Redirect(Request.RawUrl);
-
 
     }
 }
@@ -76,36 +70,28 @@
             <table>
 
                 <colgroup>
-                    <col span="1" style="width: 60%;">
-                    <col span="1" style="width: 30%;">
-                    <col span="1" style="width: 5%;">
+                    <col span="1" style="width: 95%;">
                     <col span="1" style="width: 5%;">
                 </colgroup>
                 <tr>
-                    <th style="border-left: none"> FILE NAME</th>
-                    <th> USER</th>
+                    <th style="border-left: none"> FILE NAME </th>
+                    
                     <th>  </th>
                 </tr>
                 @foreach ( var item in data ) {
                         var sqlUserSelect = "SELECT * FROM rc_UserLogin WHERE userID =@0";
                         var userInfo = db.QuerySingle(sqlUserSelect, item.userID);        
 
-                        var sqlFileSelect = "SELECT * from rc_Files where fileID =@0";
-                        var file_data = db.QuerySingle(sqlFileSelect, item.fileID);
+                        var sqlFileSelect = "SELECT fileName from rc_Files where fileID =@0";
+                        var fileName = db.QuerySingle(sqlFileSelect, item.fileID);
                     
                     <tr>
                         <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
-                           @file_data.fileName
+                           @fileName.fileName
                         </td>
-                        <td>
-                           @userInfo.firstName @Html.Raw(" ") @userInfo.lastName                  
-                        </td>
-                        
+                                                
                         <td><form method="post">
-                                 <input type="image" src="~/rcLayouts/default/images/delete.png" style="outline: none" name="cancel" title="Deny Permissions"value="@item.requestID" width="18" height="18" onclick="return confirm('Are you sure you want to pull the permission from this user?')"/>                                                                                                                                                                                           
-                        </form></td>
-                        <td><form method="post">
-                                 <input type="image" src="~/rcLayouts/default/images/Check.png" style="outline: none" name="grant" title="Grant Permissions"value="@item.requestID" width="18" height="18" onclick="return confirm('Are you sure you want to grant permission to this user?')"/>                                                                                                                                                                                           
+                                 <input type="image" src="~/rcLayouts/default/images/delete.png" name="cancel" title="Cancel Request"value="@item.requestID" width="18" height="18" onclick="return confirm('Are you sure you want to Cancel you Request for this file?')"/>                                                                                                                                                                                           
                         </form></td>
 
                     </tr>

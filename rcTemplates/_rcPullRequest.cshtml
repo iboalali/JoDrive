@@ -1,0 +1,107 @@
+﻿@{
+    if ( Session["userID"] == null ) {
+        var pageName = Request.Url.ToString().Substring( Request.Url.ToString().LastIndexOf( '/' ) + 1 );
+
+        Response.Redirect( "~/?ReturnURL=" + pageName );
+    }
+
+    int groupID = int.Parse( Request["groupId"] );
+    var user = ( int ) Session["userID"];
+    var name = ( string ) Session["name"];
+
+    var db = Database.Open( "GP" );
+
+    var sqlSelect = "SELECT * from rc_groups WHERE groupID=@0";
+    var g_data = db.QuerySingle( sqlSelect, groupID );
+
+    sqlSelect = "SELECT ownerID FROM rc_groups WHERE groupID = @0";
+    var groupAdmin = db.QuerySingle( sqlSelect, groupID );
+
+    sqlSelect = "SELECT * FROM rc_GrantedPermissions WHERE groupID=@0";
+    var data = db.Query( sqlSelect, groupID );
+
+    if ( IsPost ) {
+        var reqID = Request.Form["cancel"];
+        /*
+        //get info about the current request
+        sqlSelect = "SELECT * FROM rc_RequestedPermissions WHERE requestID=@0";
+        var currentRequest = db.QuerySingle(sqlSelect, reqID);
+
+        //grant access to user
+        var sqlInsert = "INSERT INTO rc_GrantedPermissions(fileID, holderID, groupID) VALUES(@0, @1, @2)";
+        db.Execute(sqlInsert, currentRequest.fileID, currentRequest.userID, currentRequest.groupID);
+
+        //remove entry from the requests table
+        var sqlDelete = "DELETE FROM rc_RequestedPermissions WHERE requestID=@0";
+        db.Execute(sqlDelete, reqID);
+
+        */
+        var sqlDelete = "DELETE FROM rc_GrantedPermissions WHERE fileID=@0";
+        db.Execute( sqlDelete, reqID );
+
+        //refresh page
+        Response.Redirect( Request.RawUrl );
+
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link href="~/rcLayouts/default/css/table.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/carousel.css" rel="stylesheet" />
+    <link href="~/rcLayouts/default/css/forms.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    @if ( data != null ) {
+        <fieldset style="background-color: #F7F7F7; border: none; ">
+
+            <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+            <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+            <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+        </fieldset>
+
+        <div class="table">
+            <table>
+
+                <colgroup>
+                    <col span="1" style="width: 60%;">
+                    <col span="1" style="width: 35%;">
+                    <col span="1" style="width: 5%;">
+                </colgroup>
+                <tr>
+                    <th style="border-left: none"> FILE NAME </th>
+                    <th>CURRENT OWNER</th>
+                    <th>  </th>
+                </tr>
+                @foreach ( var item in data ) {
+                    var sqlUserSelect = "SELECT * FROM rc_UserLogin WHERE userID =@0";
+                    var userInfo = db.QuerySingle( sqlUserSelect, item.holderID );
+
+                    var sqlFileSelect = "SELECT fileName from rc_Files where fileID =@0";
+                    var fileName = db.QuerySingle( sqlFileSelect, item.fileID );
+
+                    <tr>
+                        <td style=" border-left:1px solid #d7d7d7;border-left-width: thick; border-left-color: #96C4E3">
+                            @fileName.fileName
+                        </td>
+                        <td>
+                            @userInfo.firstName @Html.Raw("") @userInfo.lastName
+                        </td>
+                        <td>
+                            <form method="post">
+                                <input type="image" src="~/rcLayouts/default/images/delete.png" name="cancel" title="Cancel Request" value="@item.fileID" width="18" height="18" onclick="return confirm('Are you sure you want to Cancel you Request for this file?')" />
+                            </form>
+                        </td>
+
+                    </tr>
+                }
+            </table>
+        </div>
+    }
+</body>
+</html>

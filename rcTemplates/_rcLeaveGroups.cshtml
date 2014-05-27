@@ -16,10 +16,10 @@
         if ( !groupId.IsEmpty() ) {
             var sqldelete3 = "Delete From rc_UserGroups Where groupID= @0 and userID";
             db.Execute( sqldelete3, groupId, user);
-            sqldelete1 = "DELETE FROM rc_RequestedPermissions WHERE userID=@0";
-            db.Execute(sqldelete1, user);
-            sqldelete1 = "DELETE FROM rc_GrantedPermissions WHERE holderID=@0";
-            db.Execute(sqldelete1, user);
+            sqldelete3 = "DELETE FROM rc_RequestedPermissions WHERE userID=@0";
+            db.Execute( sqldelete3, user );
+            sqldelete3 = "DELETE FROM rc_GrantedPermissions WHERE holderID=@0";
+            db.Execute( sqldelete3, user );
 
 
             string path = Server.MapPath( "~/uploadedFiles/" + groupId.ToString() + "/" );
