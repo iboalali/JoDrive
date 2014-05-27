@@ -43,6 +43,7 @@
 </head>
 <body>
     @if ( file_data != null ) {
+        if(file_data.Count() != 0){
 
         <fieldset style="background-color: #F7F7F7; border: none; ">
 
@@ -76,9 +77,26 @@
 
                     </tr>
                 }
+
             </table>
         </div>
-    }
+    }else{
 
+        <fieldset style="background-color: #F7F7F7; border: none; ">
+
+                        <span style="padding-left: 0.9em; font-size: 16px"><strong>Group Name:</strong> @g_data.groupName</span>
+                        <span style="padding-left: 2em; font-size: 16px"><strong>Owner:</strong> @if ( g_data.ownerID == user ) { <text>You</text> } else { @name }</span>
+                        <span style="padding-left: 2em; font-size: 16px"><strong>Date Created:</strong> @g_data.date</span>
+        </fieldset>
+
+        <fieldset>
+        
+            <p> You have not requested permission for any file. Click <a href="~/requestpermission?groupId=@groupID">here</a> to request a permission </p>
+
+        </fieldset>
+
+
+    }
+    }
 </body>
 </html>
