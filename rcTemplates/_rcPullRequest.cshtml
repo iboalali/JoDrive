@@ -76,7 +76,7 @@
                 <tr>
                     <th style="border-left: none"> FILE NAME </th>
                     <th>CURRENT OWNER</th>
-                    <th>  </th>
+                    <th style="border-left: none">  </th>
                 </tr>
                 @foreach ( var item in data ) {
                     var sqlUserSelect = "SELECT * FROM rc_UserLogin WHERE userID =@0";
@@ -94,7 +94,7 @@
                         </td>
                         <td>
                             <form method="post">
-                                <input type="image" src="~/rcLayouts/default/images/delete.png" name="cancel" title="Cancel Request" value="@item.fileID" width="18" height="18" onclick="return confirm('Are you sure you want to Cancel you Request for this file?')" />
+                                <input type="image" src="~/rcLayouts/default/images/delete.png" style="outline: none" name="cancel" title="Cancel Request" value="@item.fileID" width="18" height="18" onclick="return confirm('Are you sure you want to Cancel you Request for this file?')" />
                             </form>
                         </td>
 

@@ -61,7 +61,7 @@
                 </colgroup>
                 <tr>
                     <th style="border-left: none"> FILE NAME </th>
-                    <th></th>
+                    <th style="border-left: none"></th>
                 </tr>
                 @foreach ( var item in file_data ) {
                     <tr>
@@ -71,7 +71,7 @@
                         </td>
                         <td style="border-left: none">
                             <form method="post">
-                                <input type="image" src="~/rcLayouts/default/images/upload.png" name="image" title="Upload File" value="@item.fileID" width="18" height="18" />
+                                <input type="image" src="~/rcLayouts/default/images/upload.png" style="outline: none" name="image" title="Upload File" value="@item.fileID" width="18" height="18" />
                             </form>
                         </td>
 
