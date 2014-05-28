@@ -20,7 +20,9 @@
             <li @if ( pageName == "creategroup" ) { <text> class="active" </text> }><a href='~/creategroup'><span>Create Groups</span></a></li>
             @*<li @if(pageName == "modifygroup"){<text> class="active" </text>} ><a href='~/modifygroup'><span>Modify Groups</span></a></li>*@
             <li @if ( pageName == "removegroup" ) { <text> class="active" </text> }><a href='~/removegroup'><span>Remove Groups</span></a></li>
-            <li @if ( pageName == "leavegroup" ) { <text> class="active last" </text> } else { <text> class='last' </text>  }><a href='~/leavegroup'><span>Leave Groups</span></a></li>
+            <li @if ( pageName == "leavegroup" ) { <text> class="active last" </text> } ><a href='~/leavegroup'><span>Leave Groups</span></a></li>
+            <li @if ( pageName == "changepassword" ) { <text> class="active last" </text> } else { <text> class='last' </text>  }><a href='~/changepassword'><span>Change Password</span></a></li>
+
         </ul>
     </div>
 
