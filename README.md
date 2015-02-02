@@ -5,7 +5,7 @@ Graduation Project.
 Project Management web app using ASP.Net with RazorC.
 
 ####Features:
-* Invite user
+* Invitation system
 * Full admin control
 * Upload files, even if they have the same name
 * Download files
