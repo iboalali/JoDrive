@@ -10,7 +10,7 @@ Project Management web app using ASP.Net with RazorC.
 * Upload files, even if they have the same name
 * Download files
 * Permission system
-* Messeging between co-worker on a project
+* Messaging between co-worker on a project
 
 
 
